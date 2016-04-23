@@ -30,9 +30,9 @@ class PowertrainController @Inject() (vehicleDao: VehicleDao) extends Controller
 
   def vehicleStream = WebSocket.accept[VehicleUpdate, String] { request =>
     val sink = Flow[VehicleUpdate].mapAsync(4) {
-      case VehicleLocation(vehicle, location, speed, acceleration) =>
+      case v @ VehicleLocation(vehicle, location, speed, acceleration) =>
         vehicleDao.updateVehicle(vehicle, location, speed, acceleration).toScala
-      case VehicleEvent(vehicle, name, value) =>
+      case v @ VehicleEvent(vehicle, name, value) =>
         vehicleDao.addVehicleEvent(vehicle, name, value).toScala
     }.to(Sink.ignore)
 

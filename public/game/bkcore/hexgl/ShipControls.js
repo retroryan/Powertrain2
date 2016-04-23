@@ -13,6 +13,8 @@ bkcore.hexgl.ShipControls = function(ctx)
 	var self = this;
 	var domElement = ctx.document;
 
+    this.vehicleStream = ctx.vehicleStream;
+
 	this.active = true;
 	this.destroyed = false;
 	this.falling = false;
@@ -624,16 +626,12 @@ bkcore.hexgl.ShipControls.prototype.collisionCheck = function(dt)
 
 	//console.log(this.collisionMap.getPixelBilinear(x, z).r,this.dummy.position)
     if (Math.random()*60 > 59){
-         $.ajax({
-             //dividing by 1000 because the app won't let me save any
-             //x y values greater than 90...
-             //I don' have a value for acceleration, I was thinking to provide quaternions
-             //but they aren' a single number (needs to be text). So I'll provide boost instead
-            //url: "../rest/updateVehicleLocation/"+window.hexGL.player +"/"+this.dummy.position.x/1000+"/"+this.dummy.position.y/1000+"/"+this.dummy.position.z+"/"+(this.speed+this.boost)+"/"+"w:"+this.dummy.quaternion.w+",x:"+this.dummy.quaternion.x+",y:"+this.dummy.quaternion.y+",z:"+this.dummy.quaternion.z
-            url: "../updateVehicleLocation/"+window.hexGL.player +"/"+this.dummy.position.x/1000+"/"+this.dummy.position.y/1000+"/"+this.dummy.position.z/1000+"/"+(this.speed+this.boost)+"/"+this.boost
-        }).done(function() {
-            console.log('Checkpoint saved')
-        });
+		 //dividing by 1000 because the app won't let me save any
+		 //x y values greater than 90...
+		 //I don' have a value for acceleration, I was thinking to provide quaternions
+		 //but they aren' a single number (needs to be text). So I'll provide boost instead
+         this.vehicleStream.sendLocation(this.dummy.position.x/1000, this.dummy.position.y/1000,
+           this.dummy.position.z/1000, this.speed+this.boost, this.boost);
     }
 	//console.log({c: this.collisionMap.getPixel(414, 670), d: this.dummy.position, x: x, y: y, p: this.collisionMap.getPixel(x, y)})
 
@@ -643,12 +641,7 @@ bkcore.hexgl.ShipControls.prototype.collisionCheck = function(dt)
 	{
 		bkcore.Audio.play('crash');
 
-
-        $.ajax({
-            url: "../rest/addVehicleEvent/"+window.hexGL.player+"/crash/"+this.speed+this.boost,
-        }).done(function() {
-            console.log('Boom saved')
-        });
+        this.vehicleStream.sendEvent("crash", this.speed+this.boost);
         console.log('Boom')
 
 		// Shield
