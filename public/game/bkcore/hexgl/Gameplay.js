@@ -31,6 +31,7 @@ bkcore.hexgl.Gameplay = function(opts)
 	this.track = opts.track;
 	this.analyser = opts.analyser;
 	this.pixelRatio = opts.pixelRatio;
+	this.vehicleStream = opts.vehicleStream;
 
 	this.previousCheckPoint = -1;
 
@@ -73,11 +74,7 @@ bkcore.hexgl.Gameplay = function(opts)
 			}
 			else
             {
-                $.ajax({
-                    url: "../rest/addVehicleEvent/"+window.hexGL.player +"/lap/"+self.lap,
-                }).done(function() {
-                    console.log('Lap saved')
-                });
+                self.vehicleStream.sendEvent("lap", self.lap);
                 self.lap++;
 				self.hud != null && self.hud.updateLap(self.lap, self.maxLaps);
 
@@ -171,21 +168,13 @@ bkcore.hexgl.Gameplay.prototype.end = function(result)
 
     if(result == this.results.FINISH)
     {
-        $.ajax({
-            url: "../rest/addVehicleEvent/"+window.hexGL.player +"/finished/"+Date(),
-        }).done(function() {
-            console.log('Finish saved')
-        });
+        this.vehicleStream.sendEvent("finished", Date());
         if(this.hud != null) this.hud.display("Finish");
 		this.step = 100;
 	}
 	else if(result == this.results.DESTROYED)
     {
-        $.ajax({
-            url: "../rest/addVehicleEvent/"+window.hexGL.player +"/destroyed/"+Date(),
-        }).done(function() {
-            console.log('Destroy saved')
-        });
+        this.vehicleStream.sendEvent("destroyed", Date());
         if(this.hud != null) this.hud.display("Destroyed");
 		this.step = 100;
 	}
@@ -214,11 +203,7 @@ bkcore.hexgl.Gameplay.prototype.update = function()
 	}
 	else if(this.step == 3 && this.timer.time.elapsed >= 4*this.countDownDelay+this.startDelay)
     {
-        $.ajax({
-            url: "../rest/addVehicleEvent/"+window.hexGL.player +"/start/"+Date(),
-        }).done(function() {
-            console.log('Start saved')
-        });
+        this.vehicleStream.sendEvent("start", Date());
 		if(this.hud != null) this.hud.display("Go", 0.5);
 		this.step = 4;
 		this.timer.start();
@@ -249,3 +234,4 @@ bkcore.hexgl.Gameplay.prototype.checkPoint = function()
 	else
 		return -1;
 }
+

@@ -3,15 +3,14 @@ package com.datastax.demo.vehicle;
 import com.datastax.demo.utils.AsyncWriterWrapper;
 import com.datastax.demo.vehicle.model.Location;
 import com.datastax.demo.vehicle.model.Vehicle;
-import com.datastax.driver.core.PreparedStatement;
-import com.datastax.driver.core.ResultSet;
-import com.datastax.driver.core.Row;
-import com.datastax.driver.core.Session;
+import com.datastax.driver.core.*;
 import com.github.davidmoten.geo.GeoHash;
 import com.github.davidmoten.geo.LatLong;
+import com.google.common.util.concurrent.ListenableFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -19,6 +18,10 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ForkJoinPool;
 
 public class VehicleDao {
 
@@ -35,12 +38,13 @@ public class VehicleDao {
     private final SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
     // Session and PreparedStatement are both thread-safe and one Session per application is usually fine
-    private Session session;
-    private PreparedStatement insertVehicle;
-    private PreparedStatement insertVehicleEvent;
-    private PreparedStatement insertCurrentLocation;
-    private PreparedStatement queryVehicle;
+    private final Session session;
+    private final PreparedStatement insertVehicle;
+    private final PreparedStatement insertVehicleEvent;
+    private final PreparedStatement insertCurrentLocation;
+    private final PreparedStatement queryVehicle;
 
+    @Inject
     public VehicleDao(Session session) {
         this.session = session;
 
@@ -84,7 +88,7 @@ public class VehicleDao {
         wrapper.executeAsync(this.session);
     }
 
-    public void updateVehicle(String vehicleId, Location location, double speed, double acceleration) {
+    public CompletionStage<?> updateVehicle(String vehicleId, Location location, double speed, double acceleration) {
         long day = 24 * 60 * 60 * 1000;
         Date today = new Date((System.currentTimeMillis() / day) * day);
         AsyncWriterWrapper wrapper = new AsyncWriterWrapper();
@@ -102,21 +106,20 @@ public class VehicleDao {
         float fuelLevel = Math.abs(random.nextFloat() % 50);
         float mileage = Math.abs(random.nextFloat() % 50000);
 
-        wrapper.addStatement(insertVehicle.bind(vehicleId, today, nowDate,
+        CompletionStage<ResultSet> insertVehicleResult = toCompletionStage(session.executeAsync(insertVehicle.bind(vehicleId, today, nowDate,
                 location.getLatLong().getLat() + "," + location.getLatLong().getLon(),
                 Double.toString(location.getElevation()), tile2, speed,
-                acceleration, fuelLevel, mileage));
+                acceleration, fuelLevel, mileage)));
 
-        wrapper.addStatement(insertCurrentLocation.bind(vehicleId, tile1, tile2,
-                location.getLatLong().getLat() + "," + location.getLatLong().getLon(), nowDate));
-
-        wrapper.executeAsync(this.session);
+        return insertVehicleResult.thenCompose(result -> toCompletionStage(session.executeAsync(
+                insertCurrentLocation.bind(vehicleId, tile1, tile2,
+                    location.getLatLong().getLat() + "," + location.getLatLong().getLon(), nowDate))));
     }
 
-    public void addVehicleEvent(String vehicleId, String eventName, String eventValue) {
+    public CompletionStage<?> addVehicleEvent(String vehicleId, String eventName, String eventValue) {
         long day = 24 * 60 * 60 * 1000;
         Date today = new Date((System.currentTimeMillis() / day) * day);
-        AsyncWriterWrapper wrapper = new AsyncWriterWrapper();
+        //AsyncWriterWrapper wrapper = new AsyncWriterWrapper();
         Random random = new Random();
 
         // Update time for reading
@@ -125,8 +128,10 @@ public class VehicleDao {
         Instant instant = now.atZone(ZoneId.systemDefault()).toInstant();
         Date nowDate = Date.from(instant);
 
-        wrapper.addStatement(insertVehicleEvent.bind(vehicleId, today, nowDate, eventName, eventValue));
-        wrapper.executeAsync(this.session);
+        //wrapper.addStatement(insertVehicleEvent.bind(vehicleId, today, nowDate, eventName, eventValue));
+        //wrapper.executeAsync(this.session);
+        return toCompletionStage(session.executeAsync(insertVehicleEvent.bind(vehicleId, today, nowDate, eventName, eventValue)));
+
     }
 
     public List<Vehicle> getVehicleMovements(String vehicleId, String dateString) {
@@ -226,6 +231,18 @@ public class VehicleDao {
         Double el = Double.parseDouble(elevation);
 
         return new Vehicle(vehicleId, null, collectTime, 0, 0.0f, new Location(new LatLong(lat, lng), el), 0.0f, 0, tile1, "");
+    }
+
+    private <T> CompletionStage<T> toCompletionStage(ListenableFuture<T> listenableFuture) {
+        CompletableFuture<T> completableFuture = new CompletableFuture<>();
+        listenableFuture.addListener(() -> {
+            try {
+                completableFuture.complete(listenableFuture.get());
+            } catch (Exception e) {
+                completableFuture.completeExceptionally(e);
+            }
+        }, ForkJoinPool.commonPool());
+        return completableFuture;
     }
 
 }

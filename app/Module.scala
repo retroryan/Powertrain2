@@ -1,3 +1,4 @@
+import com.datastax.driver.core.Session
 import com.google.inject.AbstractModule
 import java.time.Clock
 
@@ -24,8 +25,7 @@ class Module extends AbstractModule {
     // Set AtomicCounter as the implementation for Counter.
     bind(classOf[Counter]).to(classOf[AtomicCounter])
 
-    bind(classOf[SessionService]).asEagerSingleton()
-    bind(classOf[VehicleService]).asEagerSingleton()
+    bind(classOf[Session]).toProvider(classOf[SessionProvider])
 
   }
 

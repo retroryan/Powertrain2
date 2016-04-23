@@ -1,21 +1,17 @@
 package services
 
-import javax.inject.{Inject, Singleton}
+import javax.inject.{Provider, Inject, Singleton}
 
 import com.datastax.demo.vehicle.VehicleDao
-import com.datastax.driver.core.Cluster
+import com.datastax.driver.core.{Session, Cluster}
 import com.datastax.driver.core.policies.{DCAwareRoundRobinPolicy, DefaultRetryPolicy, TokenAwarePolicy}
 import play.api.Logger
 import play.api.inject.ApplicationLifecycle
 
 @Singleton
-class SessionService @Inject()(appLifecycle: ApplicationLifecycle) {
+class SessionProvider @Inject()(appLifecycle: ApplicationLifecycle) extends Provider[Session] {
 
-  var vehicleDao = Option.empty[VehicleDao]
-
-  init()
-
-  def init() = {
+  lazy val get = {
     val contactPoints = "localhost"
 
     //TODO convert between java and scala
@@ -32,10 +28,7 @@ class SessionService @Inject()(appLifecycle: ApplicationLifecycle) {
     val session = cluster.newSession
     Logger.info("Session created " + session.toString)
 
-    val dao = new VehicleDao(session)
-    Logger.info("DAO created " + dao.toString)
-
-    vehicleDao = Some(dao)
+    session
   }
 
 

@@ -64,6 +64,8 @@ bkcore.hexgl.HexGL = function(opts)
 	this.containers.main = opts.container == undefined ? document.body : opts.container;
 	this.containers.overlay = opts.overlay == undefined ? document.body : opts.overlay;
 
+    this.vehicleStream = new bkcore.hexgl.VehicleStream()
+
 	this.gameover = opts.gameover == undefined ? null : opts.gameover;
 
 	this.godmode = opts.godmode == undefined ? false : opts.godmode;
@@ -168,7 +170,8 @@ bkcore.hexgl.HexGL.prototype.initGameplay = function()
 		onFinish: function() {
 			self.components.shipControls.terminate();
 			self.displayScore(this.finishTime, this.lapTimes);
-		}
+		},
+		vehicleStream: this.vehicleStream
 	});
 
 	this.gameplay.start();
