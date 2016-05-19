@@ -174,9 +174,3 @@ docker run -d -p 0.0.0.0:5601:5601  --name silk silk-image
 #or if it's not working run without detaching to troubeshoot
 docker run --net=host -p 0.0.0.0:5601:5601  --name silk silk-image
 ````
-
-
-### Other information
-
-To buffer requests for DSE if there are peaks in demand a technology like Kafka could be used to store and forward requests.
-
