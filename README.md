@@ -13,6 +13,16 @@ To create the schema, run the following command in the project root directory;
 cqlsh -f  src/main/resources/cql/create_schema.cql
 ```
 
+##App
+
+To run the app install sbt
+
+http://www.scala-sbt.org/0.13/docs/Installing-sbt-on-Linux.html
+
+and run `sbt run`
+
+The app will be serving on port 9000
+
 ## Search setup
 
 Run:
