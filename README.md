@@ -27,7 +27,7 @@ The app will be serving on port 9000
 
 Run:
 
-
+    resources/solr/solr_commands.txt
 
 
 ```
