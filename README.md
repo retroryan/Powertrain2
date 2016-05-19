@@ -10,7 +10,7 @@ $DSE_HOME/bin/dse cassandra -k -s -f
 To create the schema, run the following command in the project root directory;
 
 ```
-cqlsh -f  src/main/resources/cql/create_schema.cql
+cqlsh -f  ./resources/cql/
 ```
 
 ##App
