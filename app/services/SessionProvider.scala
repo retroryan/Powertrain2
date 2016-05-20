@@ -2,7 +2,6 @@ package services
 
 import javax.inject.{Provider, Inject, Singleton}
 
-import com.datastax.demo.vehicle.VehicleDao
 import com.datastax.driver.core.{Session, Cluster}
 import com.datastax.driver.core.policies.{DCAwareRoundRobinPolicy, DefaultRetryPolicy, TokenAwarePolicy}
 import play.api.Logger
