@@ -45,6 +45,10 @@ docker run -it --net=host -p 0.0.0.0:2181:2181 --name kafka kafka-image
 docker-machine ip default
 ```
 
+to stop
+
+    docker rm -f kafka
+
 ###Docker setup for linux:
 install docker https://docs.docker.com/engine/installation/linux
 
@@ -63,6 +67,10 @@ docker run --net=host -d -p 0.0.0.0:2181:2181 --name kafka kafka-image
 #or for debug
 docker run -it --net=host -p 0.0.0.0:2181:2181 --name kafka kafka-image
 ````
+
+to stop
+
+    docker rm -f kafka
 
 ## Search setup
 
