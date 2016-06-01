@@ -68,9 +68,13 @@ class KryoInternalSerializer extends Closeable with AutoCloseable with Serialize
   override def configure(map: util.Map[String, _], b: Boolean): Unit = {}
 
   override def serialize(s: String, vehicleLocation: VehicleLocation): Array[Byte] = {
+
     val output = new ByteBufferOutput(100)
     kryos.get().writeObject(output, vehicleLocation)
-    output.toBytes
+    val toBytes: Array[Byte] = output.toBytes
+    println(s"bytes size: ${toBytes.length}  vehicle id: ${vehicleLocation.vehicle}")
+
+    toBytes
   }
 
   override def close(): Unit = {}

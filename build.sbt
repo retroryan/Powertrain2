@@ -5,7 +5,8 @@ version := "1.0-SNAPSHOT"
 lazy val root = (project in file(".")).enablePlugins(PlayScala)
 
 scalaVersion := "2.11.7"
-val kafkaVersion = "0.8.2.1"
+//val kafkaVersion = "0.9.0.1"
+val kafkaVersion = "0.10.0.0"
 
 libraryDependencies ++= Seq(
   jdbc,

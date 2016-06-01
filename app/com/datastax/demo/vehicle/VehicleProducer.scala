@@ -23,7 +23,7 @@ class VehicleProducer @Inject() (kafkaConfig: KafkaConfig) {
 
     val nextInt: Int = atomicCounter.getAndIncrement
     val key = s"$vehicleId:${nextInt}"
-    val record = new ProducerRecord[String, String](kafkaConfig.topic, key, nextInt.toString)
+    val record = new ProducerRecord[String, VehicleLocation](kafkaConfig.topic, key, vehicle)
 
     Logger.info(s"sending message $key   $nextInt")
 
