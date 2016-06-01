@@ -1,9 +1,13 @@
 package com.datastax.demo.vehicle;
 
 import com.datastax.demo.vehicle.model.Location;
+import com.datastax.demo.vehicle.model.Vehicle;
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.io.Input;
 import com.github.davidmoten.geo.LatLong;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import services.KryoInternalSerializer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -49,6 +53,8 @@ public class Main {
 
         dao.insertVehicleLocation(newLocations);
     }
+
+
 
     private Location update(Location location) {
         double lon = location.getLatLong().getLon();
