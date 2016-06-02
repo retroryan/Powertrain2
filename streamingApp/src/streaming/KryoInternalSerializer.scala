@@ -1,3 +1,5 @@
+package streaming
+
 import java.util
 
 import com.esotericsoftware.kryo.Kryo
@@ -7,8 +9,6 @@ import com.esotericsoftware.kryo.io.Input
 import com.esotericsoftware.kryo.io.Output
 import org.apache.kafka.common.serialization.Deserializer
 import org.apache.kafka.common.serialization.Serializer
-import streaming.VehicleLocation
-import streaming.VehicleEvent
 
 import java.io.Closeable
 import java.util.Map
@@ -17,36 +17,23 @@ import java.util.Map
 object  StaticKryoInternalSerializer extends com.esotericsoftware.kryo.Serializer[VehicleLocation]   {
   @Override
   def write(kryo:Kryo, output:Output, vehicleLocation: VehicleLocation) =  {
-    //write Lat and Long
-    val latLong: LatLong = vehicleLocation.location.getLatLong
-    output.writeDouble(latLong.getLat)
-    output.writeDouble(latLong.getLon)
-
-    //write elevation
-    output.writeDouble(vehicleLocation.location.getElevation)
-
     //write vehicle location information
     output.writeString(vehicleLocation.vehicle)
+    output.writeString(vehicleLocation.location)
+    output.writeString(vehicleLocation.elevation)
     output.writeDouble(vehicleLocation.speed)
     output.writeDouble(vehicleLocation.acceleration)
   }
 
   override def read(kryo: Kryo, input: Input, `type`: Class[VehicleLocation]): VehicleLocation = {
-    //read Lat and Long
-    val lat = input.readDouble()
-    val long = input.readDouble()
-    val latLong = new LatLong(lat,long)
-
-    //read elevation
-    val elevation = input.readDouble()
-    val location = new Location(latLong,elevation)
-
     //read vehicle location information
     val vehicle = input.readString()
+    val location = input.readString()
+    val elevation = input.readString()
     val speed = input.readDouble()
     val acceleration = input.readDouble()
 
-    val vehicleLocation = VehicleLocation(vehicle, location, speed,acceleration)
+    val vehicleLocation = VehicleLocation(vehicle, location, elevation, speed,acceleration)
 
     vehicleLocation
   }
