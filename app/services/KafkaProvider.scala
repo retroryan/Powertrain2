@@ -27,6 +27,7 @@ class KafkaProvider @Inject()(appLifecycle: ApplicationLifecycle, config:Configu
     props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, classOf[KryoInternalSerializer].getName)
     //props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer")
 
+    props.put("value.deserializer", classOf[KryoInternalSerializer].getName)
 
     val producer = new KafkaProducer[String, VehicleLocation](props)
 
