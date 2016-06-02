@@ -10,7 +10,7 @@ val sparkCassandraConnectorVersion = "1.6.0-M2"
 
 
 libraryDependencies ++= Seq(
-  "com.datastax.spark" % "spark-cassandra-connector_2.10" % sparkCassandraConnectorVersion,
+  "com.datastax.spark" % "spark-cassandra-connector_2.10" % sparkCassandraConnectorVersion % "provided",
   "org.apache.spark"  %% "spark-mllib"           % sparkVersion % "provided",
   "org.apache.spark"  %% "spark-graphx"          % sparkVersion % "provided",
   "org.apache.spark"  %% "spark-sql"             % sparkVersion % "provided",

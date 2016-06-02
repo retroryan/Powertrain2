@@ -3,7 +3,7 @@ package streaming
   * Created by sebastianestevez on 6/1/16.
   */
 
-import io.netty.handler.codec.string.StringDecoder
+import kafka.serializer.StringDecoder
 import org.apache.spark.streaming.kafka.KafkaUtils
 import org.apache.spark.streaming.{Seconds, StreamingContext, Time}
 import org.apache.spark.{SparkConf, SparkContext}
@@ -33,17 +33,17 @@ class StreamVehicleData {
     val sqlContext = SQLContext.getOrCreate(sc)
     import sqlContext.implicits._
 
-
     //not checkpointing
     //ssc.checkpoint("/ratingsCP")
 
-
     val topicsArg = "vehicle_events,vehicle_status"
     val brokers =  "localhost:9092"
+    val debugOutput = true
 
 
     val topics: Set[String] = topicsArg.split(",").map(_.trim).toSet
-    val kafkaParams = Map[String, String]("metadata.broker.list" -> brokers)
+    val kafkaParams = Map[String, String]("metadata.broker.list" -> brokers, "value.deserializer" -> classOf[KryoInternalSerializer].getName)
+
 
     println(s"connecting to brokers: $brokers")
     println(s"sparkStreamingContext: $sparkStreamingContext")
@@ -59,17 +59,12 @@ class StreamVehicleData {
       VehicleEvent(parsedRating(0).toString(), parsedRating(1).toString(), parsedRating(2).toString())
     }
 
-
-    //Kafka parameters
-    //properties.put("value.deserializer", serializer);
-    //props.put("value.deserializer", classOf[KryoInternalSerializer].getName)
-
     vehicleStream.foreachRDD {
       (message: RDD[VehicleEvent], batchTime: Time) => {
 
         // convert each RDD from the batch into a Ratings DataFrame
         //rating data has the format user_id:movie_id:rating:timestamp
-        val ratingDF = message.DF()
+        val ratingDF = message.toDF()
 
         // this can be used to debug dataframes
         if (debugOutput)
@@ -79,14 +74,14 @@ class StreamVehicleData {
         // Note:  Cassandra has been initialized through dse spark-submit, so we don't have to explicitly set the connection
         ratingDF.write.format("org.apache.spark.sql.cassandra")
           .mode(SaveMode.Append)
-          .options(Map("keyspace" -> "movie_db", "table" -> "rating_by_movie"))
+          .options(Map("keyspace" -> "vehicle_tracking_app", "table" -> "vehicle_stats"))
           .save()
       }
     }
 
     //Kick off
-    ssc.start()
-    ssc.awaitTermination()
+    sparkStreamingContext.start()
+    sparkStreamingContext.awaitTermination()
 
   }
 

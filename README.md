@@ -72,6 +72,25 @@ to stop
 
     docker rm -f kafka
 
+##Spark Streaming
+
+The spark streaming app ingests data off of kafka, processes it in micro
+batches, and writes to cassandra
+
+###Build the streaming app
+
+```
+cd streamingApp
+sbt assembly
+```
+
+and run from spark submit (DSE must be running with Analytics enabled)
+
+```
+dse spark submit--submit --class streams.StreamVehicleData
+PowertrainStreamingApp-assembly-1.0-SNAPSHOT.jar
+```
+
 ## Search setup
 
 Run:
