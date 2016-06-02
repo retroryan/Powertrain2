@@ -15,7 +15,7 @@ import org.apache.spark.streaming.dstream.DStream
 import org.joda.time.DateTime
 import scala.collection.mutable.ArrayBuffer
 
-class StreamVehicleData {
+object StreamVehicleData {
   def main(args: Array[String]){
     val sparkConf = new SparkConf()
     val contextDebugStr: String = sparkConf.toDebugString

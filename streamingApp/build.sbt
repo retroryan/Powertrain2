@@ -1,4 +1,4 @@
-name := """PowertrainStreamingApp"""
+name := """streaming-vehicle-app"""
 
 version := "1.0-SNAPSHOT"
 
