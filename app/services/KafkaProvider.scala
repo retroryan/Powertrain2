@@ -1,15 +1,14 @@
 package services
 
 import java.util.Properties
-import javax.inject.Singleton
 import javax.inject.{Provider, Inject, Singleton}
 
 import com.datastax.demo.vehicle.VehicleLocation
-import org.apache.kafka.clients.producer.{KafkaProducer, ProducerConfig}
+import org.apache.kafka.clients.producer.{ProducerConfig, KafkaProducer}
 import play.api.{Configuration, Logger}
 import play.api.inject.ApplicationLifecycle
 
-case class KafkaConfig(topic:String, producer: KafkaProducer[String,String])
+case class KafkaConfig(topic:String, producer: KafkaProducer[String,VehicleLocation])
 
 @Singleton
 class KafkaProvider @Inject()(appLifecycle: ApplicationLifecycle, config:Configuration) extends Provider[KafkaConfig] {
@@ -25,9 +24,12 @@ class KafkaProvider @Inject()(appLifecycle: ApplicationLifecycle, config:Configu
     val props = new Properties()
     props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, host)
     props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer")
-    props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer")
+    props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, classOf[KryoInternalSerializer].getName)
+    //props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer")
 
-    val producer = new KafkaProducer[String, String](props)
+    props.put("value.deserializer", classOf[KryoInternalSerializer].getName)
+
+    val producer = new KafkaProducer[String, VehicleLocation](props)
 
     Logger.info(s"created producer on host $host and producer $producer")
 

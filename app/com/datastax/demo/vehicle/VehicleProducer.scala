@@ -12,18 +12,23 @@ import services.KafkaConfig
 
 import scala.concurrent.Future
 
+
 class VehicleProducer @Inject() (kafkaConfig: KafkaConfig) {
 
 
   val atomicCounter = new AtomicInteger()
 
-  def updateVehicle (vehicle:VehicleLocation,  vehicleId: String, location: Location, speed: Double, acceleration: Double):Unit =  {
+  def updateVehicle (internalVehicleLocation: InternalVehicleLocation) =  {
+
+    val latLong = internalVehicleLocation.location.getLatLong
+    val elevation = internalVehicleLocation.location.getElevation.toString
+    val vehicleLocation = VehicleLocation(internalVehicleLocation.vehicle, s"${latLong.getLat},${latLong.getLon}", elevation, internalVehicleLocation.speed, internalVehicleLocation.acceleration)
 
    val timestamp = DateTime.now().getMillis
 
     val nextInt: Int = atomicCounter.getAndIncrement
-    val key = s"$vehicleId:${nextInt}"
-    val record = new ProducerRecord[String, String](kafkaConfig.topic, key, nextInt.toString)
+    val key = s"${vehicleLocation.vehicle}:$nextInt"
+    val record = new ProducerRecord[String, VehicleLocation](kafkaConfig.topic, key, vehicleLocation)
 
     Logger.info(s"sending message $key   $nextInt")
 
@@ -34,7 +39,7 @@ class VehicleProducer @Inject() (kafkaConfig: KafkaConfig) {
         else {
           //periodically log the num of messages sent
           //if (ratingsSent % 20987 == 0)
-          Logger.info(s"ratingsSent = $vehicle  //  result partition: ${result.partition()}")
+          Logger.info(s"ratingsSent = $vehicleLocation  //  result partition: ${result.partition()}")
         }
       }
     })

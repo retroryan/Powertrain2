@@ -5,7 +5,8 @@ version := "1.0-SNAPSHOT"
 lazy val root = (project in file(".")).enablePlugins(PlayScala)
 
 scalaVersion := "2.11.7"
-val kafkaVersion = "0.8.2.1"
+//val kafkaVersion = "0.9.0.1"
+val kafkaVersion = "0.10.0.0"
 
 libraryDependencies ++= Seq(
   jdbc,
@@ -18,7 +19,8 @@ libraryDependencies ++= Seq(
   "org.apache.kafka" % "kafka_2.10" % kafkaVersion
     exclude("javax.jms", "jms")
     exclude("com.sun.jdmk", "jmxtools")
-    exclude("com.sun.jmx", "jmxri")
+    exclude("com.sun.jmx", "jmxri"),
+  "com.esotericsoftware" % "kryo" % "3.0.3"
 )
 
 resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases"
