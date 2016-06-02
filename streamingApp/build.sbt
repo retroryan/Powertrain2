@@ -3,6 +3,7 @@ name := """PowertrainStreamingApp"""
 version := "1.0-SNAPSHOT"
 
 scalaVersion := "2.10.5"
+
 val kafkaVersion = "0.10.0.0"
 val sparkVersion = "1.6.0"
 val sparkCassandraConnectorVersion = "1.6.0-M2"
