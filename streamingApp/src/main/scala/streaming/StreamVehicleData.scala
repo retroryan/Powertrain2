@@ -4,16 +4,18 @@ package streaming
   */
 
 import kafka.serializer.StringDecoder
+import org.apache.spark.streaming._
 import org.apache.spark.streaming.kafka.KafkaUtils
 import org.apache.spark.streaming.{Seconds, StreamingContext, Time}
 import org.apache.spark.{SparkConf, SparkContext}
-import kafka.serializer.StringDecoder
+//import kafka.serializer.StringDecoder
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.{SQLContext, SaveMode}
 import com.datastax.spark.connector.SomeColumns
 import org.apache.spark.streaming.dstream.DStream
 import org.joda.time.DateTime
 import scala.collection.mutable.ArrayBuffer
+import java.sql.Timestamp
 
 object StreamVehicleData {
   def main(args: Array[String]){
@@ -36,13 +38,15 @@ object StreamVehicleData {
     //not checkpointing
     //ssc.checkpoint("/ratingsCP")
 
-    val topicsArg = "vehicle_events,vehicle_status"
+    //val topicsArg = "vehicle_events,vehicle_status"
+    val topicsArg = "vehicle_events"
     val brokers =  "localhost:9092"
     val debugOutput = true
 
 
     val topics: Set[String] = topicsArg.split(",").map(_.trim).toSet
-    val kafkaParams = Map[String, String]("metadata.broker.list" -> brokers, "value.deserializer" -> classOf[KryoInternalSerializer].getName)
+    //val kafkaParams = Map[String, String]("metadata.broker.list" -> brokers, "value.deserializer" -> classOf[KryoInternalSerializer].getName)
+    val kafkaParams = Map[String, String]("metadata.broker.list" -> brokers)
 
 
     println(s"connecting to brokers: $brokers")
@@ -55,8 +59,13 @@ object StreamVehicleData {
 
 
     val vehicleStream= rawVehicleStream.map { case (key, nxtVehicle) =>
-      val parsedRating = nxtVehicle.split("::")
-      VehicleEvent(parsedRating(0).toString(), parsedRating(1).toString(), parsedRating(2).toString())
+      System.out.println("HERE "+nxtVehicle)
+      val parsedRating = nxtVehicle.split("�")
+      System.out.println("PARSED "+parsedRating(0))
+
+
+
+      VehicleEvent(parsedRating(0).toString(), parsedRating(1).toString(), parsedRating(2).toString(), new Timestamp(System.currentTimeMillis()), new Timestamp(System.currentTimeMillis()))
     }
 
     vehicleStream.foreachRDD {
@@ -74,7 +83,7 @@ object StreamVehicleData {
         // Note:  Cassandra has been initialized through dse spark-submit, so we don't have to explicitly set the connection
         ratingDF.write.format("org.apache.spark.sql.cassandra")
           .mode(SaveMode.Append)
-          .options(Map("keyspace" -> "vehicle_tracking_app", "table" -> "vehicle_stats"))
+          .options(Map("keyspace" -> "vehicle_tracking_app", "table" -> "vehicle_events"))
           .save()
       }
     }
@@ -84,5 +93,4 @@ object StreamVehicleData {
     sparkStreamingContext.awaitTermination()
 
   }
-
 }
