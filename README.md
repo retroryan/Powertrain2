@@ -63,14 +63,32 @@ and refresh
 #start docker
 service docker start
 docker build -t kafka-image .
-docker run --net=host -d -p 0.0.0.0:2181:2181 --name kafka kafka-image
+docker run --net=host -d -p 0.0.0.0:2181:2181 -p 0.0.0.0:9092:9092 --name kafka kafka-image
 #or for debug
-docker run -it --net=host -p 0.0.0.0:2181:2181 --name kafka kafka-image
+docker run -it --net=host -p 0.0.0.0:2181:2181 -p 0.0.0.0:9092:9092 --name kafka kafka-image
 ````
 
 to stop
 
     docker rm -f kafka
+
+##Spark Streaming
+
+The spark streaming app ingests data off of kafka, processes it in micro
+batches, and writes to cassandra
+
+###Build the streaming app
+
+```
+cd streamingApp
+sbt assembly
+```
+
+and run from spark submit (DSE must be running with Analytics enabled)
+
+```
+dse spark-submit   --packages org.apache.spark:spark-streaming-kafka_2.10:1.6.0 --class streaming.StreamVehicleData target/scala-2.10/streaming-vehicle-app_2.10-1.0-SNAPSHOT.jar
+```
 
 ## Search setup
 
