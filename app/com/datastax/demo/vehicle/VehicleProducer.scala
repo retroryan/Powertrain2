@@ -1,39 +1,46 @@
 package com.datastax.demo.vehicle
 
-import java.util.Properties
+import java.sql.Timestamp
+import java.util.concurrent.{CompletionStage, CompletableFuture, ForkJoinPool}
 import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
 
-import com.datastax.demo.vehicle.model.Location
+import com.github.davidmoten.geo.GeoHash
+import com.google.common.util.concurrent.{JdkFutureAdapters, ListenableFuture}
 import org.apache.kafka.clients.producer._
-import org.joda.time.DateTime
 import play.api.Logger
 import services.KafkaConfig
 
+import scala.compat.java8.FutureConverters._
 import scala.concurrent.Future
 
+import scala.concurrent.ExecutionContext.Implicits.global
 
-class VehicleProducer @Inject() (kafkaConfig: KafkaConfig) {
+class VehicleProducer @Inject()(kafkaConfig: KafkaConfig) {
 
 
   val atomicCounter = new AtomicInteger()
 
-  def updateVehicle (internalVehicleLocation: InternalVehicleLocation) =  {
+  def updateVehicle(internalVehicleLocation: InternalVehicleLocation) = {
 
     val latLong = internalVehicleLocation.location.getLatLong
     val elevation = internalVehicleLocation.location.getElevation.toString
-    val vehicleLocation = VehicleLocation(internalVehicleLocation.vehicle, s"${latLong.getLat},${latLong.getLon}", elevation, internalVehicleLocation.speed, internalVehicleLocation.acceleration)
 
-   val timestamp = DateTime.now().getMillis
+    val tile1: String = GeoHash.encodeHash(latLong.getLat, 4)
+    val tile2: String = GeoHash.encodeHash(latLong.getLon, 7)
+
+    val vehicleLocation = VehicleLocation(internalVehicleLocation.vehicle, s"${latLong.getLat},${latLong.getLon}", elevation,
+      internalVehicleLocation.speed, internalVehicleLocation.acceleration,
+      new Timestamp(System.currentTimeMillis()), new Timestamp(System.currentTimeMillis()), tile2)
 
     val nextInt: Int = atomicCounter.getAndIncrement
-    val key = s"${vehicleLocation.vehicle}:$nextInt"
-    val record = new ProducerRecord[String, VehicleLocation](kafkaConfig.topic, key, vehicleLocation)
+    val key = s"${vehicleLocation.vehicle_id}:$nextInt"
+    val record = new ProducerRecord[String, String](kafkaConfig.topic, key, vehicleLocation.toString)
 
     Logger.info(s"sending message $key   $nextInt")
 
     val future = kafkaConfig.producer.send(record, new Callback {
-      override def onCompletion(result: RecordMetadata, exception: Exception) {
+      override def onCompletion(result: RecordMetadata, exception: Exception) = {
         if (exception != null)
           Logger.info("Failed to send record: " + exception)
         else {
@@ -44,9 +51,13 @@ class VehicleProducer @Inject() (kafkaConfig: KafkaConfig) {
       }
     })
 
-    future
+    val listenableFuture: ListenableFuture[RecordMetadata] = JdkFutureAdapters.listenInPoolThread(future)
+    val eventualRecordMetadata: Future[RecordMetadata] = VehicleDao.toCompletionStage(listenableFuture).toScala
+    eventualRecordMetadata.map(rslt => rslt.toString)
+
   }
 
-  def addVehicleEvent(vehicleId: String, eventName: String, eventValue: String):Future[Any] = ???
+
+  def addVehicleEvent(vehicleId: String, eventName: String, eventValue: String): Future[Any] = ???
 
 }

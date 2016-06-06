@@ -106,6 +106,7 @@ public class VehicleDao {
         float fuelLevel = Math.abs(random.nextFloat() % 50);
         float mileage = Math.abs(random.nextFloat() % 50000);
 
+        //(vehicle_id, time_period, collect_time, lat_long, elevation, tile2, speed, acceleration, fuel_level, mileage)
         CompletionStage<ResultSet> insertVehicleResult = toCompletionStage(session.executeAsync(insertVehicle.bind(vehicleId, today, nowDate,
                 location.getLatLong().getLat() + "," + location.getLatLong().getLon(),
                 Double.toString(location.getElevation()), tile2, speed,
@@ -233,7 +234,7 @@ public class VehicleDao {
         return new Vehicle(vehicleId, null, collectTime, 0, 0.0f, new Location(new LatLong(lat, lng), el), 0.0f, 0, tile1, "");
     }
 
-    private <T> CompletionStage<T> toCompletionStage(ListenableFuture<T> listenableFuture) {
+    public static <T> CompletionStage<T> toCompletionStage(ListenableFuture<T> listenableFuture) {
         CompletableFuture<T> completableFuture = new CompletableFuture<>();
         listenableFuture.addListener(() -> {
             try {
