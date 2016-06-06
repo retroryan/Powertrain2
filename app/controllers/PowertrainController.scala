@@ -32,9 +32,8 @@ class PowertrainController @Inject()(vehicleDao: VehicleDao, vehicleProducer: Ve
     val sink = Flow[VehicleUpdate].mapAsync(4) {
       case v@InternalVehicleLocation(vehicle, location, speed, acceleration) =>
         vehicleProducer.updateVehicle(v)
-        //vehicleDao.updateVehicle(vehicle, location, speed, acceleration).toScala
-      case v@VehicleEvent(vehicle, name, value) =>
-        vehicleDao.addVehicleEvent(vehicle, name, value).toScala
+      case v@InternalVehicleEvent(vehicle, name, value) =>
+        vehicleProducer.addVehicleEvent(v)
     }.to(Sink.ignore)
 
     Flow.fromSinkAndSource(sink, Source.maybe)

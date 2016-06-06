@@ -2,7 +2,9 @@ package streaming
 
 import java.sql.Timestamp
 
-case class VehicleLocation(vehicle_id: String, lat_long:String, elevation:String, speed: Double, acceleration: Double, time_period:Timestamp, collect_time:Timestamp, tile2: String) {
+sealed trait VehicleUpdate
+
+case class VehicleLocation(vehicle_id: String, lat_long:String, elevation:String, speed: Double, acceleration: Double, time_period:Timestamp, collect_time:Timestamp, tile2: String) extends VehicleUpdate{
   override def toString: String = {
     //when acceleration gets parse
     val speed_str:String = if (speed == 0.0) "0" else speed.toString
@@ -13,14 +15,8 @@ case class VehicleLocation(vehicle_id: String, lat_long:String, elevation:String
   }
 }
 
-object  VehicleLocation {
-  def apply(rawVehicleStr:String):VehicleLocation = {
-    val data = rawVehicleStr.split(",")
-    VehicleLocation(data(0), data(1), data(2), data(3).toDouble, data(4).toDouble, new Timestamp(data(5).toLong),new Timestamp(data(6).toLong), data(7))
+case class VehicleEvent(vehicle_id:String, event_name:String, event_value:String, time_period:Timestamp, collect_time:Timestamp) extends VehicleUpdate {
+  override def toString:String = {
+    s"$vehicle_id,$event_name,$event_value,${time_period.getTime},${collect_time.getTime}"
   }
-}
-case class VehicleEvent(vehicle_id:String, event_name:String, event_value:String, time_period: Timestamp, collect_time: Timestamp)
-
-object VehicleEvent {
-
 }

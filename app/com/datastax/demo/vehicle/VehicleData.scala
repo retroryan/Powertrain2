@@ -21,11 +21,20 @@ case class VehicleLocation(vehicle_id: String, lat_long:String, elevation:String
   }
 }
 
+case class NOTVehicleEvent(vehicle_id:String, event_name:String, event_value:String,
+                        time_period:Timestamp = new Timestamp(System.currentTimeMillis()),
+                        collect_time:Timestamp = new Timestamp(System.currentTimeMillis())) extends VehicleUpdate {
+  override def toString:String = {
+    s"$vehicle_id,$event_name,$event_value,${time_period.getTime},${collect_time.getTime}"
+  }
+}
+
+
 sealed trait VehicleUpdate
 object VehicleUpdate {
   implicit val reads: Reads[VehicleUpdate] = (__ \ "type").read[String].flatMap {
     case "location" => implicitly[Reads[InternalVehicleLocation]].map(v => v)
-    case "event" => implicitly[Reads[VehicleEvent]].map(v => v)
+    case "event" => implicitly[Reads[InternalVehicleEvent]].map(v => v)
   }
 }
 
@@ -41,7 +50,8 @@ object InternalVehicleLocation {
   implicit val reads: Reads[InternalVehicleLocation] = Json.reads[InternalVehicleLocation]
 }
 
-case class VehicleEvent(vehicle:String, name:String, value:String) extends VehicleUpdate
-object VehicleEvent {
-  implicit val reads: Reads[VehicleEvent] = Json.reads[VehicleEvent]
+case class InternalVehicleEvent(vehicle_id:String, event_name:String, event_value:String) extends VehicleUpdate
+
+object InternalVehicleEvent {
+  implicit val reads: Reads[InternalVehicleEvent] = Json.reads[InternalVehicleEvent]
 }
