@@ -33,8 +33,8 @@ class PowertrainController @Inject() (vehicleDao: VehicleDao, vehicleProducer: V
       case v @ VehicleLocation(vehicle, location, speed, acceleration) =>
         vehicleProducer.updateVehicle(v)
       case v @ VehicleEvent(vehicle, name, value) =>
-        println(s"vehicle event")
-        vehicleDao.addVehicleEvent(vehicle, name, value).toScala
+        println(s"sending vehicle event")
+        vehicleProducer.addVehicleEvent(v)
     }.to(Sink.ignore)
 
     Flow.fromSinkAndSource(sink, Source.maybe)

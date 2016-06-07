@@ -19,7 +19,7 @@ class KafkaProvider @Inject()(appLifecycle: ApplicationLifecycle, config:Configu
    // val host: String = config.getString("powertrain.kafkaHost").getOrElse("localhost")
    // val topic: String = config.getString("powertrain.kafkaHost").getOrElse("vehicle_events")
 
-    val host: String = "192.168.99.100:9092"
+    val host: String = "localhost:9092"
     val topic: String = "vehicle_events"
 
     val props = new Properties()

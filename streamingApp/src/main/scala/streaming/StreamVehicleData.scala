@@ -35,7 +35,7 @@ object StreamVehicleData {
 
     //val topicsArg = "vehicle_events,vehicle_status"
     val topicsArg = "vehicle_events"
-    val brokers = "192.168.99.100:9092"
+    val brokers = "localhost:9092"
     val debugOutput = true
 
 
@@ -70,7 +70,7 @@ object StreamVehicleData {
 
     splitArray.filter(data => data(0) == "event").map { data =>
         println(s"vehicle event: ${data(1)}")
-        VehicleEvent(data(1), data(2), data(3), new Timestamp(data(6).toLong), new Timestamp(data(7).toLong))
+        VehicleEvent(data(1), data(2), data(3), new Timestamp(data(4).toLong), new Timestamp(data(5).toLong))
       }
       .saveToCassandra("vehicle_tracking_app", "vehicle_events")
 
