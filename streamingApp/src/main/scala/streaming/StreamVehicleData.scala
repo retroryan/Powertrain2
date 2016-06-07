@@ -7,14 +7,11 @@ package streaming
 import java.sql.Timestamp
 
 import kafka.serializer.StringDecoder
+import org.apache.spark.sql.SQLContext
 import org.apache.spark.streaming.kafka.KafkaUtils
-import org.apache.spark.streaming.{Seconds, StreamingContext, Time}
+import org.apache.spark.streaming.{Seconds, StreamingContext}
 import org.apache.spark.{SparkConf, SparkContext}
 
-//import kafka.serializer.StringDecoder
-
-import org.apache.spark.rdd.RDD
-import org.apache.spark.sql.{SQLContext, SaveMode}
 
 object StreamVehicleData {
   def main(args: Array[String]) {
@@ -32,7 +29,6 @@ object StreamVehicleData {
 
     val sc = SparkContext.getOrCreate(sparkConf)
     val sqlContext = SQLContext.getOrCreate(sc)
-    import sqlContext.implicits._
 
     //not checkpointing
     //ssc.checkpoint("/ratingsCP")
@@ -54,64 +50,32 @@ object StreamVehicleData {
     println(s"topics: $topics")
 
 
+    import com.datastax.spark.connector.streaming._
+
+
     val rawVehicleStream = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](sparkStreamingContext, kafkaParams, topics)
 
-    val vehicleStream = rawVehicleStream.map { case (key, rawVehicleStr) =>
-      System.out.println("HERE " + rawVehicleStr)
-      val data = rawVehicleStr.split(",")
-      val vehicleUpdate:VehicleUpdate = data(0) match {
-        case "location" =>
-          VehicleLocation(data(1), data(2), data(3), data(4).toDouble, data(5).toDouble, new Timestamp(data(6).toLong),new Timestamp(data(7).toLong), data(8))
-        case "event" =>
-          VehicleEvent(data(1), data(2), data(3), new Timestamp(data(4).toLong),new Timestamp(data(5).toLong))
-      }
+    val splitArray = rawVehicleStream.map { case (key, rawVehicleStr) =>
+      val strings= rawVehicleStr.split(",")
 
-     vehicleUpdate
-
+      println(s"update type: ${strings(0)}")
+      strings
     }
-
-    vehicleStream.map {
-      case (message: RDD[VehicleLocation], batchTime: Time) => {
-        // convert each RDD from the batch into a Vehicle Location DataFrame
-        //rating data has the format user_id:movie_id:rating:timestamp
-        val vehicleLocationDF = message.toDF()
-
-        // this can be used to debug dataframes
-        if (debugOutput) {
-          println("vehicle location:")
-          vehicleLocationDF.show()
-        }
-
-        // save the DataFrame to Cassandra
-        // Note:  Cassandra has been initialized through dse spark-submit, so we don't have to explicitly set the connection
-        vehicleLocationDF.write.format("org.apache.spark.sql.cassandra")
-          .mode(SaveMode.Append)
-          .options(Map("keyspace" -> "vehicle_tracking_app", "table" -> "vehicle_stats"))
-          .save()
+    splitArray.filter(data => data(0) == "location")
+      .map { data =>
+        println(s"vehicle location: ${data(1)}")
+        VehicleLocation(data(1), data(2), data(3), data(4).toDouble, data(5).toDouble, new Timestamp(data(6).toLong), new Timestamp(data(7).toLong), data(8))
       }
-      case (message: RDD[VehicleEvent], batchTime: Time) => {
-        // convert each RDD from the batch into a Vehicle Location DataFrame
-        //rating data has the format user_id:movie_id:rating:timestamp
-        val vehicleEventDF = message.toDF()
+      .saveToCassandra("vehicle_tracking_app", "vehicle_stats")
 
-        // this can be used to debug dataframes
-        if (debugOutput) {
-          println("vehicle event:")
-          vehicleEventDF.show()
-        }
-
-        // save the DataFrame to Cassandra
-        // Note:  Cassandra has been initialized through dse spark-submit, so we don't have to explicitly set the connection
-        vehicleEventDF.write.format("org.apache.spark.sql.cassandra")
-          .mode(SaveMode.Append)
-          .options(Map("keyspace" -> "vehicle_tracking_app", "table" -> "vehicle_events"))
-          .save()
+    splitArray.filter(data => data(0) == "event").map { data =>
+        println(s"vehicle event: ${data(1)}")
+        VehicleEvent(data(1), data(2), data(3), new Timestamp(data(6).toLong), new Timestamp(data(7).toLong))
       }
-    }
+      .saveToCassandra("vehicle_tracking_app", "vehicle_events")
 
     //Kick off
     sparkStreamingContext.start()
     sparkStreamingContext.awaitTermination()
-
   }
 }

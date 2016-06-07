@@ -4,7 +4,7 @@ import java.sql.Timestamp
 
 sealed trait VehicleUpdate
 
-case class VehicleLocation(vehicle_id: String, lat_long:String, elevation:String, speed: Double, acceleration: Double, time_period:Timestamp, collect_time:Timestamp, tile2: String) extends VehicleUpdate{
+case class VehicleLocation(vehicle_id: String, lat_long:String, elevation:String, speed: Double, acceleration: Double, time_period:Timestamp, collect_time:Timestamp, tile2: String, fuel_level:Double =0, mileage:Double =0) extends VehicleUpdate{
   override def toString: String = {
     //when acceleration gets parse
     val speed_str:String = if (speed == 0.0) "0" else speed.toString

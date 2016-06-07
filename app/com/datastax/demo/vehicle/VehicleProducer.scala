@@ -1,27 +1,23 @@
 package com.datastax.demo.vehicle
 
 import java.sql.Timestamp
-import java.util.concurrent.{CompletionStage, CompletableFuture, ForkJoinPool}
 import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
 
 import com.github.davidmoten.geo.GeoHash
-import com.google.common.util.concurrent.{JdkFutureAdapters, ListenableFuture}
 import org.apache.kafka.clients.producer._
 import play.api.Logger
 import services.KafkaConfig
 
-import scala.compat.java8.FutureConverters._
-import scala.concurrent.Future
-
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class VehicleProducer @Inject()(kafkaConfig: KafkaConfig) {
 
 
   val atomicCounter = new AtomicInteger()
 
-  def updateVehicle(internalVehicleLocation: InternalVehicleLocation) = {
+  def updateVehicle(internalVehicleLocation: VehicleLocation) = {
 
     val latLong = internalVehicleLocation.location.getLatLong
     val elevation = internalVehicleLocation.location.getElevation.toString
@@ -29,7 +25,7 @@ class VehicleProducer @Inject()(kafkaConfig: KafkaConfig) {
     val tile1: String = GeoHash.encodeHash(latLong.getLat, 4)
     val tile2: String = GeoHash.encodeHash(latLong.getLon, 7)
 
-    val vehicleLocation = VehicleLocation(internalVehicleLocation.vehicle, s"${latLong.getLat},${latLong.getLon}", elevation,
+    val vehicleLocation = ALT_VehicleLocation(internalVehicleLocation.vehicle, s"${latLong.getLat},${latLong.getLon}", elevation,
       internalVehicleLocation.speed, internalVehicleLocation.acceleration,
       new Timestamp(System.currentTimeMillis()), new Timestamp(System.currentTimeMillis()), tile2)
 
@@ -37,7 +33,7 @@ class VehicleProducer @Inject()(kafkaConfig: KafkaConfig) {
     val key = s"${vehicleLocation.vehicle_id}:$nextInt"
     val record = new ProducerRecord[String, String](kafkaConfig.topic, key, "location," + vehicleLocation.toString)
 
-    Logger.info(s"sending message $key   $nextInt")
+    Logger.info(s"sending location $key $nextInt")
 
     val future = kafkaConfig.producer.send(record, new Callback {
       override def onCompletion(result: RecordMetadata, exception: Exception) = {
@@ -46,27 +42,34 @@ class VehicleProducer @Inject()(kafkaConfig: KafkaConfig) {
         else {
           //periodically log the num of messages sent
           //if (ratingsSent % 20987 == 0)
-          Logger.info(s"ratingsSent = $vehicleLocation  //  result partition: ${result.partition()}")
+          Logger.info(s"location sent = $vehicleLocation  //  result partition: ${result.partition()}")
         }
       }
     })
 
-    val listenableFuture: ListenableFuture[RecordMetadata] = JdkFutureAdapters.listenInPoolThread(future)
-    val eventualRecordMetadata: Future[RecordMetadata] = VehicleDao.toCompletionStage(listenableFuture).toScala
-    eventualRecordMetadata.map(rslt => rslt.toString)
+    /*  In the future this can be used to map the results to a message back to client
 
+     val listenableFuture: ListenableFuture[RecordMetadata] = JdkFutureAdapters.listenInPoolThread(future)
+     val eventualRecordMetadata: Future[RecordMetadata] = VehicleDao.toCompletionStage(listenableFuture).toScala
+     eventualRecordMetadata.map(rslt => rslt.toString)
+
+     */
+
+    Future {
+      "Not Used"
+    }
   }
 
 
-  def addVehicleEvent(internalVehicleEvent:InternalVehicleEvent): Future[String] = {
+  def addVehicleEvent(internalVehicleEvent: VehicleEvent) = {
 
-    val vehicleEvent = NOTVehicleEvent(internalVehicleEvent.vehicle_id, internalVehicleEvent.event_name, internalVehicleEvent.event_value)
+    val vehicleEvent = ALT__VehicleEvent(internalVehicleEvent.vehicle, internalVehicleEvent.name, internalVehicleEvent.value)
 
     val nextInt: Int = atomicCounter.getAndIncrement
     val key = s"${vehicleEvent.vehicle_id}:$nextInt"
     val record = new ProducerRecord[String, String](kafkaConfig.topic, key, "event," + vehicleEvent.toString)
 
-    Logger.info(s"sending message $key   $nextInt")
+    Logger.info(s"sending event $key   $nextInt")
 
     val future = kafkaConfig.producer.send(record, new Callback {
       override def onCompletion(result: RecordMetadata, exception: Exception) = {
@@ -75,14 +78,20 @@ class VehicleProducer @Inject()(kafkaConfig: KafkaConfig) {
         else {
           //periodically log the num of messages sent
           //if (ratingsSent % 20987 == 0)
-          Logger.info(s"ratingsSent = $vehicleEvent  //  result partition: ${result.partition()}")
+          Logger.info(s"event sent = $vehicleEvent  //  result partition: ${result.partition()}")
         }
       }
     })
 
-    val listenableFuture: ListenableFuture[RecordMetadata] = JdkFutureAdapters.listenInPoolThread(future)
-    val eventualRecordMetadata: Future[RecordMetadata] = VehicleDao.toCompletionStage(listenableFuture).toScala
-    eventualRecordMetadata.map(rslt => rslt.toString)
+    /*
+        val listenableFuture: ListenableFuture[RecordMetadata] = JdkFutureAdapters.listenInPoolThread(future)
+        val eventualRecordMetadata: Future[RecordMetadata] = VehicleDao.toCompletionStage(listenableFuture).toScala
+        eventualRecordMetadata.map(rslt => rslt.toString)
+    */
+
+    Future {
+      "Not Used"
+    }
   }
 
 }
