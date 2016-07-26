@@ -29,16 +29,7 @@ class PowertrainController @Inject()(kafka: Kafka, system: ActorSystem) extends 
   def vehicleStream = WebSocket.accept[VehicleUpdate, String] { request =>
     val sink = Flow[VehicleUpdate]
       .map(vehicleUpdate => {
-          val record = vehicleUpdate match {
-            case vehicleLocation@VehicleLocation(vehicle, location, speed, acceleration) => {
-              val key = s"${vehicleLocation.vehicle}:$atomicCounter.getAndIncrement"
-              new ProducerRecord[String, String]("vehicle_events", key, "location," + vehicleLocation.toString)
-            }
-            case vehicleEvent@VehicleEvent(vehicle, name, value) => {
-              val key = s"${vehicleEvent.vehicle}:$atomicCounter.getAndIncrement"
-              new ProducerRecord[String, String]("vehicle_events", key, "event," + vehicleEvent.toString)
-            }
-          }
+          val record: ProducerRecord[String, String] = getProducerRecord(vehicleUpdate)
           ProducerMessage.Message(record, vehicleUpdate)
         }
       )
@@ -53,5 +44,16 @@ class PowertrainController @Inject()(kafka: Kafka, system: ActorSystem) extends 
   }
 
 
-
+  def getProducerRecord(vehicleUpdate: VehicleUpdate): ProducerRecord[String, String] = {
+    vehicleUpdate match {
+      case vehicleLocation@VehicleLocation(vehicle, location, speed, acceleration) => {
+        val key = s"${vehicleLocation.vehicle}:$atomicCounter.getAndIncrement"
+        new ProducerRecord[String, String]("vehicle_events", key, "location," + vehicleLocation.toString)
+      }
+      case vehicleEvent@VehicleEvent(vehicle, name, value) => {
+        val key = s"${vehicleEvent.vehicle}:$atomicCounter.getAndIncrement"
+        new ProducerRecord[String, String]("vehicle_events", key, "event," + vehicleEvent.toString)
+      }
+    }
+  }
 }
