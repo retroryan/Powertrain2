@@ -1,7 +1,3 @@
-GET     /updateVehicleLocation/:vehicle/:lon/:lat/:elevation/:speed/:acceleration     controllers.PowertrainController.updateVehicleLocation(vehicle:String,lon:String, lat:String, elevation:String, speed:String, acceleration:String)
-
-GET     /rest/addVehicleEvent/:vehicle/:name/:value        controllers.PowertrainController.addVehicleEvent(vehicle:String, name:String, value:String)
-
 GET     /vehicleStream   controllers.PowertrainController.vehicleStream
 
 # Map static resources from the /public folder to the /assets URL path

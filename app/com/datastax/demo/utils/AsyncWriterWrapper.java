@@ -71,9 +71,6 @@ public class AsyncWriterWrapper {
     }
 
     public boolean exhausted() {
-        if (counter > retries) {
-            return true;
-        }
-        return false;
+        return counter > retries;
     }
 }

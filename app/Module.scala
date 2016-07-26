@@ -32,10 +32,9 @@ class Module(environment: Environment,
     // Set AtomicCounter as the implementation for Counter.
     bind(classOf[Counter]).to(classOf[AtomicCounter])
 
-
-    bind(classOf[Session]).toProvider(classOf[SessionProvider])
-
     bind(classOf[KafkaConfig]).toProvider(classOf[KafkaProvider])
+
+    bind(classOf[Kafka]).to(classOf[KafkaImpl])
 
     //bind(classOf[Configuration]).toProvider(classOf[ConfigurationProvider])
 
