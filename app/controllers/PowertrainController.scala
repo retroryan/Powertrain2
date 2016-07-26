@@ -7,7 +7,7 @@ import akka.actor.ActorSystem
 import akka.kafka.scaladsl.Producer
 import akka.kafka.{ProducerMessage, ProducerSettings}
 import akka.stream.scaladsl.{Flow, Sink, Source}
-import com.datastax.demo.vehicle._
+import data.{VehicleEvent, VehicleLocation, VehicleUpdate}
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.serialization.StringSerializer
 import play.api.mvc.WebSocket.MessageFlowTransformer
