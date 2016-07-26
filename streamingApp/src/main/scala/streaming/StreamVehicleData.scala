@@ -8,6 +8,7 @@ import java.sql.Timestamp
 
 import kafka.serializer.StringDecoder
 import org.apache.spark.sql.SQLContext
+import org.apache.spark.streaming.dstream.DStream
 import org.apache.spark.streaming.kafka.KafkaUtils
 import org.apache.spark.streaming.{Seconds, StreamingContext}
 import org.apache.spark.{SparkConf, SparkContext}
@@ -51,7 +52,7 @@ object StreamVehicleData {
 
 
     import com.datastax.spark.connector.streaming._
-
+    import sqlContext.implicits._
 
     val rawVehicleStream = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](sparkStreamingContext, kafkaParams, topics)
 
@@ -61,18 +62,29 @@ object StreamVehicleData {
       println(s"update type: ${strings(0)}")
       strings
     }
-    splitArray.filter(data => data(0) == "location")
+
+    val locationStream = splitArray.filter(data => data(0) == "location")
       .map { data =>
         println(s"vehicle location: ${data(1)}")
         VehicleLocation(data(1), data(2), data(3), data(4).toDouble, data(5).toDouble, new Timestamp(data(6).toLong), new Timestamp(data(7).toLong), data(8))
       }
-      .saveToCassandra("vehicle_tracking_app", "vehicle_stats")
+    locationStream.foreachRDD{
+      location => location.toDF.show
 
-    splitArray.filter(data => data(0) == "event").map { data =>
-        println(s"vehicle event: ${data(1)}")
-        VehicleEvent(data(1), data(2), data(3), new Timestamp(data(4).toLong), new Timestamp(data(5).toLong))
-      }
-      .saveToCassandra("vehicle_tracking_app", "vehicle_events")
+    }
+    locationStream.saveToCassandra("vehicle_tracking_app", "vehicle_stats")
+
+    val eventStream: DStream[VehicleEvent] = splitArray.filter(data => data(0) == "event").map { data =>
+      println(s"vehicle event: ${data(1)}")
+      VehicleEvent(data(1), data(2), data(3), new Timestamp(data(4).toLong), new Timestamp(data(5).toLong))
+    }
+
+    eventStream.foreachRDD{
+      event => event.toDF.show
+
+    }
+
+    eventStream.saveToCassandra("vehicle_tracking_app", "vehicle_events")
 
     //Kick off
     sparkStreamingContext.start()
