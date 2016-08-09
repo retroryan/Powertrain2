@@ -1,47 +1,59 @@
 package controllers
 
+import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.{Inject, Singleton}
 
-import akka.stream.scaladsl.{Source, Sink, Flow}
-import com.datastax.demo.vehicle._
-import com.datastax.demo.vehicle.model.Location
-import com.github.davidmoten.geo.LatLong
-import play.api.libs.json._
+import akka.actor.ActorSystem
+import akka.kafka.scaladsl.Producer
+import akka.kafka.{ProducerMessage, ProducerSettings}
+import akka.stream.scaladsl.{Flow, Sink, Source}
+import data.{VehicleEvent, VehicleLocation, VehicleUpdate}
+import org.apache.kafka.clients.producer.ProducerRecord
+import org.apache.kafka.common.serialization.StringSerializer
 import play.api.mvc.WebSocket.MessageFlowTransformer
-import play.api.mvc.{WebSocket, Action, Controller}
-
-import scala.compat.java8.FutureConverters._
+import play.api.mvc.{Controller, WebSocket}
+import services.Kafka
 
 
 @Singleton
-class PowertrainController @Inject() (vehicleDao: VehicleDao, vehicleProducer: VehicleProducer) extends Controller {
+class PowertrainController @Inject()(kafka: Kafka, system: ActorSystem) extends Controller {
 
+  val atomicCounter = new AtomicInteger()
 
-  def updateVehicleLocation(vehicle:String,lon:String, lat:String, elevation:String, speed:String, acceleration:String) = Action {
-    val location: Location = new Location(new LatLong(lat.toDouble, lon.toDouble), elevation.toDouble)
-    vehicleDao.updateVehicle(vehicle, location, speed.toDouble, acceleration.toDouble)
-    Ok(s"updateVehicleLocation: $vehicle")
-  }
-
-  def addVehicleEvent(vehicle:String, name:String, value:String) = Action {
-    vehicleDao.addVehicleEvent(vehicle,name,value)
-    Ok(s"addVehicleEvent: $vehicle name:$name value:$value ")
-  }
-
-  def vehicleStream = WebSocket.accept[VehicleUpdate, String] { request =>
-    val sink = Flow[VehicleUpdate].mapAsync(4) {
-      case v @ VehicleLocation(vehicle, location, speed, acceleration) =>
-        vehicleProducer.updateVehicle(v)
-      case v @ VehicleEvent(vehicle, name, value) =>
-        println(s"sending vehicle event")
-        vehicleProducer.addVehicleEvent(v)
-    }.to(Sink.ignore)
-
-    Flow.fromSinkAndSource(sink, Source.maybe)
-  }
+  val producerSettings = ProducerSettings(system, new StringSerializer, new StringSerializer)
+    .withBootstrapServers("localhost:9092")
 
   implicit val messageFlowTransformer = MessageFlowTransformer.jsonMessageFlowTransformer[VehicleUpdate, String]
 
 
+  def vehicleStream = WebSocket.accept[VehicleUpdate, String] { request =>
+    val sink = Flow[VehicleUpdate]
+      .map(vehicleUpdate => {
+          val record: ProducerRecord[String, String] = getProducerRecord(vehicleUpdate)
+          ProducerMessage.Message(record, vehicleUpdate)
+        }
+      )
+      .via(Producer.flow(producerSettings))
+      .map { result =>
+        val record = result.message.record
+        println(s"${record.topic}/${record.partition} ${result.offset}: ${record.value} (${result.message.passThrough}")
+        result
+      }.to(Sink.ignore)
 
+    Flow.fromSinkAndSource(sink, Source.maybe)
+  }
+
+
+  def getProducerRecord(vehicleUpdate: VehicleUpdate): ProducerRecord[String, String] = {
+    vehicleUpdate match {
+      case vehicleLocation@VehicleLocation(vehicle, location, speed, acceleration) => {
+        val key = s"${vehicleLocation.vehicle}:$atomicCounter.getAndIncrement"
+        new ProducerRecord[String, String]("vehicle_events", key, "location," + vehicleLocation.toString)
+      }
+      case vehicleEvent@VehicleEvent(vehicle, name, value) => {
+        val key = s"${vehicleEvent.vehicle}:$atomicCounter.getAndIncrement"
+        new ProducerRecord[String, String]("vehicle_events", key, "event," + vehicleEvent.toString)
+      }
+    }
+  }
 }

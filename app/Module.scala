@@ -24,21 +24,9 @@ class Module(environment: Environment,
     val kafkaConfiguration: Configuration =
       configuration.getConfig("sparkAtScale.kafkaHost").getOrElse(Configuration.empty)
 
-    // Use the system clock as the default implementation of Clock
-    bind(classOf[Clock]).toInstance(Clock.systemDefaultZone)
-    // Ask Guice to create an instance of ApplicationTimer when the
-    // application starts.
-    bind(classOf[ApplicationTimer]).asEagerSingleton()
-    // Set AtomicCounter as the implementation for Counter.
-    bind(classOf[Counter]).to(classOf[AtomicCounter])
-
-
-    bind(classOf[Session]).toProvider(classOf[SessionProvider])
-
     bind(classOf[KafkaConfig]).toProvider(classOf[KafkaProvider])
 
-    //bind(classOf[Configuration]).toProvider(classOf[ConfigurationProvider])
-
+    bind(classOf[Kafka]).to(classOf[KafkaImpl])
   }
 
 }

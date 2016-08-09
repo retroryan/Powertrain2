@@ -2,8 +2,7 @@ package services
 
 import java.util.Properties
 import javax.inject.{Provider, Inject, Singleton}
-
-import com.datastax.demo.vehicle.VehicleLocation
+import data.VehicleLocation
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.producer.{ProducerConfig, KafkaProducer}
 import play.api.{Configuration, Logger}

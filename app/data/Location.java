@@ -1,4 +1,4 @@
-package com.datastax.demo.vehicle.model;
+package data;
 
 import com.github.davidmoten.geo.LatLong;
 
