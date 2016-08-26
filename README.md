@@ -34,18 +34,7 @@ The app will be serving on port 9000
 The spark streaming app ingests data off of kafka, processes it in micro
 batches, and writes to cassandra
 
-###Build the streaming app
-
-```
-cd streamingApp
-sbt assembly
-```
-
-and run from spark submit (DSE must be running with Analytics enabled)
-
-```
-dse spark-submit   --packages org.apache.spark:spark-streaming-kafka_2.10:1.6.0 --class streaming.StreamVehicleData target/scala-2.10/streaming-vehicle-app_2.10-1.0-SNAPSHOT.jar
-```
+This app lives in the PowertrainStreaming repo
 
 ## Search setup
 
@@ -56,26 +45,6 @@ Run:
 
 ```
 http://localhost:8080/vehicle-tracking-app/game
-```
-
-## Further REST interfaces
-
-To update a vehicle pass its vehicle id, location (lon + lat + elevation), speed and acceleration. This will add one if it doesn't already exist
-
-```
-curl -X PUT http://localhost:8080/vehicle-tracking-app/rest/updateVehicleLocation/FT664PQ/22.53956077140064/-0.20225833920426117/10.00/55/5
-```
-  	
-To get a vehicles location (lon + lat)
-
-```
-curl http://localhost:8080/vehicle-tracking-app/rest/getvehiclelocation/FT664PQ
-```
-  	
-To add a vehicles event
-
-```
-curl -X PUT http://localhost:8080/vehicle-tracking-app/rest/addVehicleEvent/FT664PQ/braking/12.5
 ```
 
 ## Analytics operations

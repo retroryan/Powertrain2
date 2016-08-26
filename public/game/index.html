@@ -13,8 +13,10 @@
 
     </script>
     <title>Powertrain</title>
+    <meta name="google-signin-client_id" content="61115967087-entofbitidq4ipj7ltmeu4k26jm9pl22.apps.googleusercontent.com">
+
     <meta charset="utf-8">
-    <meta name="description" content="Based on -- HexGL, a futuristic racing game built by Thibaut Despoulain (BKcore) using HTML5, Javascript and WebGL. Come challenge your friends on this fast-paced 3D game!">
+    <meta name="description" content="DataStax Powertrain is a DSE demo demonstrating search and steaming analytics functionality. This UI is based on -- HexGL, a futuristic racing game built by Thibaut Despoulain (BKcore)">
     <meta property="og:title" content="Powertrain" />
     <meta property="og:type" content="game" />
     <link rel="icon" href="favicon.png" type="image/png">
@@ -22,6 +24,8 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
     <link rel="stylesheet" href="css/multi.css" type="text/css" charset="utf-8">
     <link rel="stylesheet" href="css/fonts.css" type="text/css" charset="utf-8">
+    <link rel="stylesheet" href="css/bootstrap.css" type="text/css" charset="utf-8">
+
     <style>
       body {
         padding:0;
@@ -35,8 +39,70 @@
         left: 0;
         width: 100%;
       }
+      #g-button{
+        position:absolute;
+        z-index:1;
+      }
+      a:link {
+        text-decoration: none;
+      }
+      table > thead > tr > th {
+        background-color: #007996;
+        border-color: #007996;
+        color:white;
+      }
+      /*.login-selector:{*/
+
+      /*}*/
+      #alternativeLogin{
+        cursor:hand;
+        cursor:pointer;
+      }
+
+      .flip {
+        -webkit-perspective: 1000px;
+        perspective: 1000px;
+
+        position: relative;
+        /*text-align: center;*/
+      }
+      .flip .card.flipped {
+        -webkit-transform: rotatey(-180deg);
+        transform: rotatey(-180deg);
+      }
+      .flip .card {
+
+        height: 100%;
+        -webkit-transform-style: preserve-3d;
+        -webkit-transition: 0.5s;
+        transform-style: preserve-3d;
+        transition: .75s;
+      }
+      .flip .card .face {
+
+        -webkit-backface-visibility: hidden ;
+        backface-visibility: hidden ;
+        z-index: 2;
+
+      }
+      .flip .card .front {
+        position: absolute;
+        width: 100%;
+        z-index: 1;
+
+      }
+      .flip .card .back {
+        -webkit-transform: rotatey(-180deg);
+        transform: rotatey(-180deg);
+      }
+      .inner{margin:0px !important;}
     </style>
-    <script type="text/javascript">
+
+
+  </head>
+
+  <body>
+  <script type="text/javascript">
     //analytics
     var _gaq = _gaq || [];
     _gaq.push(['_setAccount', 'UA-26274524-4']);
@@ -46,17 +112,47 @@
       ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
       var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
     })();
-    </script>
-  </head>
+  </script>
+  <!--<div id="g-button"></div>-->
+  <script>
+    function onSuccess(googleUser) {
+      console.log('Logged in as: ' + googleUser.getBasicProfile().getEmail());
+      $("#playerName").val(googleUser.getBasicProfile().getName());
+      
+    }
+    function onFailure(error) {
+      console.log(error);
+    }
+    function renderButton() {
+      gapi.signin2.render('g-button', {
+        'scope': 'profile email https://www.googleapis.com/auth/contacts.readonly',
+        'width': 240,
+        'height': 50,
+        'longtitle': true,
+        'theme': 'dark',
+        'onsuccess': onSuccess,
+        'onfailure': onFailure
+      });
+    }
+  </script>
 
-  <body>
+  <script src="https://apis.google.com/js/platform.js?onload=renderButton" async defer></script>
+
     <div id="step-1">
       <div id="global"></div>
       <div id="title">
       </div>
       <div id="menucontainer">
         <div id="menu">
-          <div id="start">Start</div>
+          <!--<div id="github-login">-->
+            <!--GitHub Login-->
+            <!--&lt;!&ndash;<a role="button" style="z-index:1; position:absolute" href="https://github.com/login/oauth/authorize?scope=user:email&client_id=<%= client_id %>">Click here</a>&ndash;&gt;-->
+          <!--</div>-->
+          <!--<a href=''>-->
+          <a id="start">
+            <div>Start</div>
+          </a>
+          <div id="s-leaderboard">Leaderboard</div>
           <div id="s-controlType">Controls: Keyboard</div>
           <div id="s-quality">Quality: High</div>
           <div id="s-hud">HUD: On</div>
@@ -67,7 +163,7 @@
     </div>
     <div id="step-2" style="display: none">
       <div id="ctrl-help">Click/Touch to continue.</div>
-      <input id="playerName" value="insert name here"></input>
+      <input style="display:none" id="playerName" value="insert name here"></input>
     </div>
     <div id="step-3" style="display: none">
       <div id="progressbar"></div>
@@ -92,6 +188,192 @@
     </div>
 
     <div id="leapinfo" style="display: none"></div>
+
+
+    <div class="modal fade" id="loginModal" >
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body" style="offset:0px; padding-top:0px; padding-bottom:0px">
+            <div class="row">
+              <div class="flip">
+                <div id="loginCard" class="card">
+                  <div class="face front">
+                      <a style="color:#000000" href="https://github.com/login/oauth/authorize?client_id=42b2549bfb19824cdf0f">
+                        <div class="col-md-12 col-sm-12 col-xs-12 login-selector" style="text-align:center;">
+                          <h4><b>Login with GitHub!</b></h4>
+                          <img style="padding-top: 10%; padding-bottom:5%" src="imgs/GitHub-Mark-120px-plus.png">
+
+                        </div>
+                      </a>
+                      <a style="">
+                        <div id="alternativeLogin" style="text-align:center;padding:5px" >
+                          Don't have a GitHub?
+                        </div>
+                      </a>
+                  </div>
+                  <div class="face back" style="background-color:#000000">
+                      <div id="alternativeLoginScreen" class="col-md-12 col-sm-12 col-xs-12" >
+                        <h4 style="text-align:center"><b>No?</b></h4>
+                        <div class="form-group">
+                          <label for="favoriteLanguage">Favorite Language</label>
+                          <input class="form-control" id="favoriteLanguage" placeholder="Whats your favorite language?">
+                        </div>
+                        <div class="form-group">
+                          <label for="username">Username</label>
+                          <input class="form-control" id="username" placeholder="Username">
+                        </div>
+                        <div class="form-group">
+                          <label for="exampleInputEmail1">Email address</label>
+                          <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
+                          <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+                        </div>
+
+                        <div class="form-group">
+                          <button id="flip_back" style="width: 48%;margin-right:2%" class="btn btn-secondary">Back</button>
+                          <button id="standard_login" style="width: 48%" class="btn btn-primary">Lets Play!</button>
+                        </div>
+                      </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="leaderboardModal" >
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            <h4 class="modal-title">Leaderboard</h4>
+
+          </div>
+          <div class="modal-body" >
+
+            <table id="leaderBoardTable" class="table table-bordered">
+              <thead>
+              <tr>
+                <th style="border:0px">
+                  Username
+                </th>
+                <th style="border:0px">
+                  Fastest Lap
+                </th>
+                <th style="border:0px">
+                  Category
+                </th>
+                <th style="border:0px">
+                  Rank
+                </th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr>
+                <td>
+                  Peyton
+                </td>
+                <td>
+                  01:25:15
+                </td>
+                <td>
+                  DataStax
+                </td>
+                <td>
+                  1
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  Sebastian
+                </td>
+                <td>
+                  01:26:15
+                </td>
+                <td>
+                  DataStax
+                </td>
+                <td>
+                  2
+                </td>
+              </tr>
+
+
+              </tbody>
+            </table>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <script type="text/javascript" src="js/jquery-3.1.0.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap.js"></script>
+
+
+    <script type="text/javascript">
+        // Getting page params
+        function getParameterByName(name, url) {
+          if (!url) url = window.location.href;
+          name = name.replace(/[\[\]]/g, "\\$&");
+          var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                  results = regex.exec(url);
+          if (!results) return null;
+          if (!results[2]) return '';
+          return decodeURIComponent(results[2].replace(/\+/g, " "));
+        }
+
+        $('document').ready(function () {
+
+          jQuery.noConflict();
+
+          var github_code = getParameterByName("code")
+
+          if(github_code != null)
+          {
+            $("#playerName").val(github_code);
+            login_successful();
+          }
+          $("#alternativeLogin").click(function(){
+            $("#loginCard").toggleClass('flipped');
+
+          })
+          $("#flip_back").click(function(){
+            $("#loginCard").toggleClass('flipped');
+
+          })
+          $("#s-leaderboard").click(function(){
+            $("#leaderboardModal").modal("show")
+          })
+          $('#start').click(function () {
+            $('#loginModal').modal('show');
+          });
+          $("#standard_login").on("click", function(){
+            $("#playerName").val($("#username"));
+            $('#loginModal').modal('hide');
+            login_successful();
+//            $('step-2').style.backgroundImage = "url(css/help-" + s[0][3] + ".png)";
+//            $("#step-2").click();
+          })
+        });
+      </script>
+
+
 
     <script src="libs/leap-0.4.1.min.js"></script>
     <script src="libs/Three.dev.js"></script>
