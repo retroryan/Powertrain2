@@ -18,7 +18,6 @@ bkcore.hexgl.ShipControls = function(ctx)
 	this.active = true;
 	this.destroyed = false;
 	this.falling = false;
-
 	this.dom = domElement;
 	this.mesh = null;
 
@@ -643,7 +642,6 @@ bkcore.hexgl.ShipControls.prototype.collisionCheck = function(dt)
 
         this.vehicleStream.sendEvent("crash", this.speed+this.boost);
         console.log('Boom')
-
 		// Shield
 		var sr = (this.getRealSpeed() / this.maxSpeed);
 		this.shield -= sr * sr * 0.8 * this.shieldDamage;

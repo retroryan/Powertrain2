@@ -33,6 +33,8 @@ bkcore.hexgl.Gameplay = function(opts)
 	this.pixelRatio = opts.pixelRatio;
 	this.vehicleStream = opts.vehicleStream;
 
+    this.vehicleStream.timer = this.timer;
+
 	this.previousCheckPoint = -1;
 
 	this.results = {
@@ -53,6 +55,8 @@ bkcore.hexgl.Gameplay = function(opts)
 	this.onFinish = opts.onFinish == undefined ? function(){console.log("FINISH");} : opts.onFinish;
 
 	this.raceData = null;
+
+	this.shipControls.timer = this.timer
 
 	this.modes.timeattack = function()
 	{
@@ -77,7 +81,6 @@ bkcore.hexgl.Gameplay = function(opts)
                 self.vehicleStream.sendEvent("lap", self.lap);
                 self.lap++;
 				self.hud != null && self.hud.updateLap(self.lap, self.maxLaps);
-
 				if(self.lap == self.maxLaps)
 					self.hud != null && self.hud.display("Final lap", 0.5);
 			}
@@ -168,13 +171,13 @@ bkcore.hexgl.Gameplay.prototype.end = function(result)
 
     if(result == this.results.FINISH)
     {
-        this.vehicleStream.sendEvent("finished", Date());
+        this.vehicleStream.sendEvent("finished", this.timer.time.elapsed);
         if(this.hud != null) this.hud.display("Finish");
 		this.step = 100;
 	}
 	else if(result == this.results.DESTROYED)
     {
-        this.vehicleStream.sendEvent("destroyed", Date());
+        this.vehicleStream.sendEvent("destroyed", this.timer.time.elapsed);
         if(this.hud != null) this.hud.display("Destroyed");
 		this.step = 100;
 	}
@@ -203,7 +206,7 @@ bkcore.hexgl.Gameplay.prototype.update = function()
 	}
 	else if(this.step == 3 && this.timer.time.elapsed >= 4*this.countDownDelay+this.startDelay)
     {
-        this.vehicleStream.sendEvent("start", Date());
+        this.vehicleStream.sendEvent("start", this.timer.time.elapsed);
 		if(this.hud != null) this.hud.display("Go", 0.5);
 		this.step = 4;
 		this.timer.start();
