@@ -39,7 +39,14 @@
   50% { transform: translateY(-5px) }
   100% { transform: translateY(5px) }
 }
-
+input{
+  -webkit-touch-callout: text;
+  -webkit-user-select: text;
+  -khtml-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
 * {
   -webkit-touch-callout: none;
   -webkit-user-select: none;

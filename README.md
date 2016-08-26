@@ -1,9 +1,15 @@
 #Powertrain
 
-## DSE Setup
+##Kafka setup
+
+Follow the setup instructions in KAFKA SETUP 
+
+## DSE / Cassandra Setup
 DSE must be configured with spark and analytics enabled.
 
 $DSE_HOME/bin/dse cassandra -k -s -f
+
+Alternatively you can run open source Spark and Cassandra separately
 
 ## Schema
 
@@ -22,55 +28,6 @@ http://www.scala-sbt.org/0.13/docs/Installing-sbt-on-Linux.html
 and run `sbt run`
 
 The app will be serving on port 9000
-
-##Kafka Docker setup
-
-To simplify operations, this docker container will install and run kafka & zookeeper, create the topic and start the consumer on port 2181
-
-###Docker setup for OSX:
-
-```
-#setup
-docker-machine start default
-eval $(docker-machine env default)
-#a bit of cleanup
-docker rm -f $(docker ps -aq)
-docker rmi -f $(docker images -aq)
-#build
-cd docker/kafka/
-docker build -t kafka-image .
-docker run --net=host -d -p 0.0.0.0:2181:2181 --name kafka kafka-image
-#or for debug
-docker run -it --net=host -p 0.0.0.0:2181:2181 --name kafka kafka-image
-docker-machine ip default
-```
-
-to stop
-
-    docker rm -f kafka
-
-###Docker setup for linux:
-install docker https://docs.docker.com/engine/installation/linux
-
-add your user to the docker group
-    sudo gpasswd -a ${USER} docker
-
-and refresh
-   newgrp docker
-
-
-````
-#start docker
-service docker start
-docker build -t kafka-image .
-docker run --net=host -d -p 0.0.0.0:2181:2181 -p 0.0.0.0:9092:9092 --name kafka kafka-image
-#or for debug
-docker run -it --net=host -p 0.0.0.0:2181:2181 -p 0.0.0.0:9092:9092 --name kafka kafka-image
-````
-
-to stop
-
-    docker rm -f kafka
 
 ##Spark Streaming
 
