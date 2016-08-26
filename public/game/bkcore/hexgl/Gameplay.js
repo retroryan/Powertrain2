@@ -56,7 +56,6 @@ bkcore.hexgl.Gameplay = function(opts)
 
 	this.raceData = null;
 
-	this.shipControls.timer = this.timer
 
 	this.modes.timeattack = function()
 	{
@@ -171,13 +170,13 @@ bkcore.hexgl.Gameplay.prototype.end = function(result)
 
     if(result == this.results.FINISH)
     {
-        this.vehicleStream.sendEvent("finished", this.timer.time.elapsed);
+        this.vehicleStream.sendEvent("finished", Date());
         if(this.hud != null) this.hud.display("Finish");
 		this.step = 100;
 	}
 	else if(result == this.results.DESTROYED)
     {
-        this.vehicleStream.sendEvent("destroyed", this.timer.time.elapsed);
+        this.vehicleStream.sendEvent("destroyed", Date());
         if(this.hud != null) this.hud.display("Destroyed");
 		this.step = 100;
 	}
@@ -206,7 +205,7 @@ bkcore.hexgl.Gameplay.prototype.update = function()
 	}
 	else if(this.step == 3 && this.timer.time.elapsed >= 4*this.countDownDelay+this.startDelay)
     {
-        this.vehicleStream.sendEvent("start", this.timer.time.elapsed);
+        this.vehicleStream.sendEvent("start", Date());
 		if(this.hud != null) this.hud.display("Go", 0.5);
 		this.step = 4;
 		this.timer.start();
