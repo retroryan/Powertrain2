@@ -1,5 +1,9 @@
-GET     /vehicleStream   controllers.PowertrainController.vehicleStream
+GET     /vehicleStream              controllers.PowertrainController.vehicleStream
+
+# Rest endpoints
+GET     /populateGraph/:username    controllers.PowertrainRestController.populateGraph(username: String)
+GET     /username/:token            controllers.PowertrainRestController.getUserName(token: String)
+GET     /leaderboard/:username/:filter  controllers.PowertrainRestController.getLeaderboard(username: String, filter: String)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /*file               controllers.Assets.versioned(path="/public", file: Asset)
-
