@@ -15,7 +15,7 @@ object VehicleUpdate {
   }
 }
 
-case class VehicleLocation(vehicle: String, location: Location, speed: Double, acceleration: Double) extends VehicleUpdate {
+case class VehicleLocation(vehicle: String, location: Location, speed: Double, acceleration: Double, elapsed_time: Int) extends VehicleUpdate {
   override def toString: String = {
     //when acceleration gets parse
     val speed_str:String = if (speed == 0.0) "0" else speed.toString
@@ -29,7 +29,7 @@ case class VehicleLocation(vehicle: String, location: Location, speed: Double, a
     val tile1: String = GeoHash.encodeHash(location.getLatLong, 4)
     val tile2: String = GeoHash.encodeHash(location.getLatLong, 7)
 
-    val vl_str = s"$vehicle,$latLong,${location.getElevation},$speed_str,$acc_str,${time_period.getTime},${collect_time.getTime},$tile2"
+    val vl_str = s"$vehicle,$latLong,${location.getElevation},$speed_str,$acc_str,${time_period.getTime},${collect_time.getTime},$tile2,${elapsed_time}"
     vl_str
   }
 }
@@ -43,11 +43,11 @@ object VehicleLocation {
   implicit val reads: Reads[VehicleLocation] = Json.reads[VehicleLocation]
 }
 
-case class VehicleEvent(vehicle:String, name:String, value:String) extends VehicleUpdate {
+case class VehicleEvent(vehicle:String, name:String, value:String, elapsed_time: Int) extends VehicleUpdate {
   override def toString:String = {
     val time_period:Timestamp = new Timestamp(System.currentTimeMillis())
     val collect_time:Timestamp = new Timestamp(System.currentTimeMillis())
-    s"$vehicle,$name,$value,${time_period.getTime},${collect_time.getTime}"
+    s"$vehicle,$name,$value,${time_period.getTime},${collect_time.getTime},${elapsed_time}"
   }
 }
 object VehicleEvent {

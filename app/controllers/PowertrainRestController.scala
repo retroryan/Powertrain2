@@ -6,41 +6,54 @@ package controllers
 
 import java.io.StringWriter
 import java.util
-
-import org.apache.http.client.methods.{HttpGet, HttpPost}
-import org.apache.http.impl.client.DefaultHttpClient
-import org.apache.http.util.EntityUtils
 import play.api._
 import play.api.libs.json._
 import play.api.mvc._
+import javax.inject._
+import play.api.libs.ws._
 import sys.process._
+import scalaj.http._
 
 
-class PowertrainRestController extends Controller {
+
+class PowertrainRestController @Inject() (configuration: play.api.Configuration) extends Controller {
   def populateGraph(username: String)= Action {
-    //just change echo for the python script you want to run, username will be passed as an argument.
-    val cmd = Seq("echo", username).!!
-    Ok(cmd)
+    val cmd = Seq("python", getClass.getClassLoader.getResource("networkByUser.py").getPath, "127.0.0.1", username).!!
+    Ok("Success")
   }
   def getUserName(token: String) = Action {
-    val cmd = Seq("echo", token).!!
-    val url = "https://api.github.com/user";
-
-    val post = new HttpGet(url)
-    val client = new DefaultHttpClient
-    val params = client.getParams
-    params.setParameter("access_token", token)
-
-    // send request
-    val response = client.execute(post)
-    val result = EntityUtils.toString(response.getEntity());
-
-    Ok(result)
+    val access_token = get_authorization_code(token);
+    val username = get_username(access_token);
+    Ok(username)
   }
   def getLeaderboard(username: String, filter: String) = Action {
     val cmd = Seq("echo", username,filter).!!
     //TODO - gremlin code to get leaderboard based on filter and username
     Ok(cmd)
+  }
+
+  def get_authorization_code(token: String): String =
+  {
+
+    val response = Http("https://github.com/login/oauth/access_token")
+      .postForm(Seq(
+        "client_id" -> configuration.getString("powertrain.github_client_id").get,
+        "client_secret" -> configuration.getString("powertrain.github_client_secret").get,
+        "code" -> token))
+      .asString
+    // send request
+    val access_token = response.body.split('&')(0).split('=')(1);
+    return access_token;
+  }
+  def get_username(access_token: String): String ={
+
+    val response = Http("https://api.github.com/user")
+      .param("access_token",access_token)
+      .asString
+
+    val response_json = Json.parse(response.body)
+
+    return (response_json \ "login").get.toString.replace("\"","")
   }
 
 }

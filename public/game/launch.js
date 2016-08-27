@@ -8,6 +8,7 @@
 
     init = function(controlType, quality, hud, godmode, name) {
         var hexGL, progressbar;
+        console.log(name);
         hexGL = new bkcore.hexgl.HexGL({
             player: name, 
             document: document,

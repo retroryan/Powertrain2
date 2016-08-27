@@ -27,6 +27,7 @@ CREATE TABLE vehicle_tracking_app.vehicle_stats (
     solr_query text,
     speed double,
     tile2 text,
+    elapsed_time int,
     PRIMARY KEY ((vehicle_id, time_period), collect_time)
 ) WITH CLUSTERING ORDER BY (collect_time DESC);
 
@@ -37,6 +38,7 @@ CREATE TABLE vehicle_tracking_app.vehicle_events (
     event_name text,
     event_value text,
     solr_query text,
+    elapsed_time int,
     PRIMARY KEY ((vehicle_id, time_period), collect_time)
 ) WITH CLUSTERING ORDER BY (collect_time DESC);
 

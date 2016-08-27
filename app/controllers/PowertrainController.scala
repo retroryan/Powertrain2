@@ -46,11 +46,11 @@ class PowertrainController @Inject()(kafka: Kafka, system: ActorSystem) extends 
 
   def getProducerRecord(vehicleUpdate: VehicleUpdate): ProducerRecord[String, String] = {
     vehicleUpdate match {
-      case vehicleLocation@VehicleLocation(vehicle, location, speed, acceleration) => {
+      case vehicleLocation@VehicleLocation(vehicle, location, speed, acceleration, elapsed_time) => {
         val key = s"${vehicleLocation.vehicle}:$atomicCounter.getAndIncrement"
         new ProducerRecord[String, String]("vehicle_events", key, "location," + vehicleLocation.toString)
       }
-      case vehicleEvent@VehicleEvent(vehicle, name, value) => {
+      case vehicleEvent@VehicleEvent(vehicle, name, value, elapsed_time) => {
         val key = s"${vehicleEvent.vehicle}:$atomicCounter.getAndIncrement"
         new ProducerRecord[String, String]("vehicle_events", key, "event," + vehicleEvent.toString)
       }

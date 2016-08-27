@@ -19,7 +19,7 @@ bkcore.hexgl.VehicleStream.prototype.sendEvent = function(name, value)
       vehicle: window.hexGL.player,
       name: name,
       value: "" + value,
-      time: this.timer.time.elapsed
+      elapsed_time: this.timer.time.elapsed,
     }));
 };
 
@@ -38,7 +38,6 @@ bkcore.hexgl.VehicleStream.prototype.sendLocation = function(lat, lon, elevation
       },
       speed: speed,
       acceleration: acceleration,
-      time: this.timer.time.elapsed
-
+      elapsed_time: this.timer.time.elapsed
     }));
 };

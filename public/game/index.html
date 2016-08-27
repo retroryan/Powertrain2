@@ -346,7 +346,16 @@
 
           if(github_code != null)
           {
-            $("#playerName").val(github_code);
+            $.ajax({
+              'url':  '/username/' + github_code,
+              success: function(data){
+                $("#playerName").val(data);
+                $.ajax({
+                  'url': '/populateGraph/' + data,
+                  async: true,
+                })
+              }
+            })
             login_successful();
           }
           $("#alternativeLogin").click(function(){
@@ -364,7 +373,7 @@
             $('#loginModal').modal('show');
           });
           $("#standard_login").on("click", function(){
-            $("#playerName").val($("#username"));
+            $("#playerName").val($("#username").val());
             $('#loginModal').modal('hide');
             login_successful();
 //            $('step-2').style.backgroundImage = "url(css/help-" + s[0][3] + ".png)";

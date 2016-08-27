@@ -1,0 +1,148 @@
+Start Timestamp: 2016-08-27 03:11:58
+Using datacenter 'SearchGraphAnalytics' for DCAwareRoundRobinPolicy (via host '127.0.0.1'); if incorrect, please specify a local_dc to the constructor, or limit contact points to local cluster nodes
+Using datacenter 'SearchGraphAnalytics' for DCAwareRoundRobinPolicy (via host '127.0.0.1'); if incorrect, please specify a local_dc to the constructor, or limit contact points to local cluster nodes
+Using datacenter 'SearchGraphAnalytics' for DCAwareRoundRobinPolicy (via host '127.0.0.1'); if incorrect, please specify a local_dc to the constructor, or limit contact points to local cluster nodes
+Connected to cluster: Test Cluster
+Datacenter: SearchGraphAnalytics; Host: 127.0.0.1; Rack: rack1
+Starting new HTTPS connection (1): api.github.com
+Start Timestamp: 2016-08-27 03:15:10
+Using datacenter 'SearchGraphAnalytics' for DCAwareRoundRobinPolicy (via host '127.0.0.1'); if incorrect, please specify a local_dc to the constructor, or limit contact points to local cluster nodes
+Using datacenter 'SearchGraphAnalytics' for DCAwareRoundRobinPolicy (via host '127.0.0.1'); if incorrect, please specify a local_dc to the constructor, or limit contact points to local cluster nodes
+Using datacenter 'SearchGraphAnalytics' for DCAwareRoundRobinPolicy (via host '127.0.0.1'); if incorrect, please specify a local_dc to the constructor, or limit contact points to local cluster nodes
+Connected to cluster: Test Cluster
+Datacenter: SearchGraphAnalytics; Host: 127.0.0.1; Rack: rack1
+Starting new HTTPS connection (1): api.github.com
+Start Timestamp: 2016-08-27 03:24:18
+Using datacenter 'SearchGraphAnalytics' for DCAwareRoundRobinPolicy (via host '127.0.0.1'); if incorrect, please specify a local_dc to the constructor, or limit contact points to local cluster nodes
+Using datacenter 'SearchGraphAnalytics' for DCAwareRoundRobinPolicy (via host '127.0.0.1'); if incorrect, please specify a local_dc to the constructor, or limit contact points to local cluster nodes
+Using datacenter 'SearchGraphAnalytics' for DCAwareRoundRobinPolicy (via host '127.0.0.1'); if incorrect, please specify a local_dc to the constructor, or limit contact points to local cluster nodes
+Connected to cluster: Test Cluster
+Datacenter: SearchGraphAnalytics; Host: 127.0.0.1; Rack: rack1
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Connection closed
+Closed Timestamp: 2016-08-27 03:24:42
+Start Timestamp: 2016-08-27 03:25:31
+Using datacenter 'SearchGraphAnalytics' for DCAwareRoundRobinPolicy (via host '127.0.0.1'); if incorrect, please specify a local_dc to the constructor, or limit contact points to local cluster nodes
+Using datacenter 'SearchGraphAnalytics' for DCAwareRoundRobinPolicy (via host '127.0.0.1'); if incorrect, please specify a local_dc to the constructor, or limit contact points to local cluster nodes
+Using datacenter 'SearchGraphAnalytics' for DCAwareRoundRobinPolicy (via host '127.0.0.1'); if incorrect, please specify a local_dc to the constructor, or limit contact points to local cluster nodes
+Connected to cluster: Test Cluster
+Datacenter: SearchGraphAnalytics; Host: 127.0.0.1; Rack: rack1
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Connection closed
+Closed Timestamp: 2016-08-27 03:25:33
+Start Timestamp: 2016-08-27 03:39:24
+Using datacenter 'SearchGraphAnalytics' for DCAwareRoundRobinPolicy (via host '127.0.0.1'); if incorrect, please specify a local_dc to the constructor, or limit contact points to local cluster nodes
+Using datacenter 'SearchGraphAnalytics' for DCAwareRoundRobinPolicy (via host '127.0.0.1'); if incorrect, please specify a local_dc to the constructor, or limit contact points to local cluster nodes
+Using datacenter 'SearchGraphAnalytics' for DCAwareRoundRobinPolicy (via host '127.0.0.1'); if incorrect, please specify a local_dc to the constructor, or limit contact points to local cluster nodes
+Connected to cluster: Test Cluster
+Datacenter: SearchGraphAnalytics; Host: 127.0.0.1; Rack: rack1
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Connection closed
+Closed Timestamp: 2016-08-27 03:39:27
+Start Timestamp: 2016-08-27 03:39:58
+Using datacenter 'SearchGraphAnalytics' for DCAwareRoundRobinPolicy (via host '127.0.0.1'); if incorrect, please specify a local_dc to the constructor, or limit contact points to local cluster nodes
+Using datacenter 'SearchGraphAnalytics' for DCAwareRoundRobinPolicy (via host '127.0.0.1'); if incorrect, please specify a local_dc to the constructor, or limit contact points to local cluster nodes
+Using datacenter 'SearchGraphAnalytics' for DCAwareRoundRobinPolicy (via host '127.0.0.1'); if incorrect, please specify a local_dc to the constructor, or limit contact points to local cluster nodes
+Connected to cluster: Test Cluster
+Datacenter: SearchGraphAnalytics; Host: 127.0.0.1; Rack: rack1
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Connection closed
+Closed Timestamp: 2016-08-27 03:40:01
+Start Timestamp: 2016-08-27 03:40:40
+Using datacenter 'SearchGraphAnalytics' for DCAwareRoundRobinPolicy (via host '127.0.0.1'); if incorrect, please specify a local_dc to the constructor, or limit contact points to local cluster nodes
+Using datacenter 'SearchGraphAnalytics' for DCAwareRoundRobinPolicy (via host '127.0.0.1'); if incorrect, please specify a local_dc to the constructor, or limit contact points to local cluster nodes
+Using datacenter 'SearchGraphAnalytics' for DCAwareRoundRobinPolicy (via host '127.0.0.1'); if incorrect, please specify a local_dc to the constructor, or limit contact points to local cluster nodes
+Connected to cluster: Test Cluster
+Datacenter: SearchGraphAnalytics; Host: 127.0.0.1; Rack: rack1
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Starting new HTTPS connection (1): api.github.com
+Connection closed
+Closed Timestamp: 2016-08-27 03:40:43
