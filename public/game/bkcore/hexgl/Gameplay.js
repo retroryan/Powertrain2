@@ -73,15 +73,18 @@ bkcore.hexgl.Gameplay = function(opts)
 
 			if(self.lap == this.maxLaps)
 			{
+				self.vehicleStream.sendEvent("finish", self.lap);
 				self.end(self.results.FINISH);
+
 			}
 			else
             {
-                self.vehicleStream.sendEvent("lap", self.lap);
                 self.lap++;
 				self.hud != null && self.hud.updateLap(self.lap, self.maxLaps);
 				if(self.lap == self.maxLaps)
 					self.hud != null && self.hud.display("Final lap", 0.5);
+				self.vehicleStream.sendEvent("lap", self.lap);
+
 			}
 		}
 		else if(cp != -1 && cp != self.previousCheckPoint)
