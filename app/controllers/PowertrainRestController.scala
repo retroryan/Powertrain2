@@ -18,12 +18,15 @@ import scalaj.http._
 
 class PowertrainRestController @Inject() (configuration: play.api.Configuration) extends Controller {
   def populateGraph(username: String)= Action {
-    val cmd = Seq("python", getClass.getClassLoader.getResource("networkByUser.py").getPath, "127.0.0.1", username).!!
+    val pyPath = getClass.getClassLoader.getResource("networkByUser.py").getPath
+    Logger.info(s"pyPath for networkByUser.py $pyPath")
+    val cmd = Seq("python", pyPath, "127.0.0.1", username).!!
+    Logger.info(s"cmd output for networkByUser: $cmd")
     Ok("Success")
   }
   def getUserName(token: String) = Action {
-    val access_token = get_authorization_code(token);
-    val username = get_username(access_token);
+    val access_token = get_authorization_code(token)
+    val username = get_username(access_token)
     Ok(username)
   }
   def getLeaderboard(username: String, filter: String) = Action {
@@ -42,8 +45,8 @@ class PowertrainRestController @Inject() (configuration: play.api.Configuration)
         "code" -> token))
       .asString
     // send request
-    val access_token = response.body.split('&')(0).split('=')(1);
-    return access_token;
+    val access_token = response.body.split('&')(0).split('=')(1)
+    access_token
   }
   def get_username(access_token: String): String ={
 
@@ -53,7 +56,7 @@ class PowertrainRestController @Inject() (configuration: play.api.Configuration)
 
     val response_json = Json.parse(response.body)
 
-    return (response_json \ "login").get.toString.replace("\"","")
+    (response_json \ "login").get.toString.replace("\"","")
   }
 
 }
