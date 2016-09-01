@@ -20,7 +20,7 @@ class PowertrainRestController @Inject() (configuration: play.api.Configuration)
   def populateGraph(username: String)= Action {
     val pyPath = getClass.getClassLoader.getResource("networkByUser.py").getPath
     Logger.info(s"pyPath for networkByUser.py $pyPath")
-    val cmd = Seq("python", pyPath, "127.0.0.1", username).!!
+    val cmd = Seq("python", pyPath, configuration.getString("powertrain.dse_graph_host").get, username).!!
     Logger.info(s"cmd output for networkByUser: $cmd")
     Ok("Success")
   }
