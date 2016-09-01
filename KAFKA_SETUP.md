@@ -43,7 +43,7 @@ jconsole &
 
 
 #kafka 0.8.2
-bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 5 --topic vehicle_events
+bin/kafka-topics.sh --create --zookeeper 172.31.14.225:2181 --replication-factor 1 --partitions 5 --topic vehicle_events
 
 bin/kafka-topics.sh --list --zookeeper localhost:2181
 
