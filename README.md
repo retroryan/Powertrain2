@@ -29,6 +29,23 @@ and run `sbt run`
 
 The app will be serving on port 9000
 
+##App Production deployment
+
+on your local development environment:
+sbt dist
+
+first deployment
+    copy entire powertrain2-1.0-SNAPSHOT.zip to server
+
+second deployment do the following:
+    cd target/universal
+    unzip powertrain2-1.0-SNAPSHOT.zip
+    copy the following to the server:
+        powertrain2.powertrain2-1.0-SNAPSHOT-assets.jar and powertrain2.powertrain2-1.0-SNAPSHOT-sans-externalized.jar
+
+on the server:
+nohup bin/powertrain2 -J-Xms1G -J-Xmx5G -J-server 2>&1 1> powertrain2.log &
+
 ##Spark Streaming
 
 The spark streaming app ingests data off of kafka, processes it in micro
