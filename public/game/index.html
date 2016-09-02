@@ -390,8 +390,16 @@
         function toggleAudio(){
           if (bkcore.Audio.sounds.bg.gainNode.gain.value != 0){
             bkcore.Audio.volume('bg',0)
+            bkcore.Audio.volume('crash',0)
+            bkcore.Audio.volume('destroy',0)
+            bkcore.Audio.volume('wind',0)
+            bkcore.Audio.volume('boost',0)
           }else {
             bkcore.Audio.volume('bg',.1)
+            bkcore.Audio.volume('crash',.1)
+            bkcore.Audio.volume('destroy',.1)
+            bkcore.Audio.volume('wind',.1)
+            bkcore.Audio.volume('boost',.1)
           }
 
 
