@@ -6,11 +6,16 @@ package controllers
 
 import java.io.StringWriter
 import java.util
+
 import play.api._
 import play.api.libs.json._
 import play.api.mvc._
 import javax.inject._
+
+import com.datastax.driver.dse.graph.{GraphOptions, SimpleGraphStatement}
+import com.datastax.driver.dse.{DseCluster, DseSession}
 import play.api.libs.ws._
+
 import sys.process._
 import scalaj.http._
 
@@ -53,15 +58,34 @@ class PowertrainRestController @Inject() (configuration: play.api.Configuration)
     val response = Http("https://api.github.com/user")
       .param("access_token",access_token)
       .asString
-
     val response_json = Json.parse(response.body)
 
     (response_json \ "login").get.toString.replace("\"","")
   }
 
-  def global_leaderboard(): String ={
-
+  def global_leaderboard() = Action {
+    val session = get_dse_session("127.0.0.1", "summitDemo")
     ""
+
+    val getTopTenGlobal = new SimpleGraphStatement(
+      """
+        g.V().hasLabel('cassandra_summit')
+          .in('attending').out('has_events')
+          .has('powertrain_events','event_name', 'lap')
+          .order().by("elapsed_time", incr)
+          .valueMap('vehicle_id', 'elapsed_time').limit(10)
+      """)
+    val results = session.executeGraph(getTopTenGlobal).all()
+    println(results);
+    Ok("")
+  }
+  def get_dse_session(dse_host: String, graph_name: String): DseSession = {
+    val dseCluster = if (graph_name ne "")
+      new DseCluster.Builder().addContactPoint(dse_host).withGraphOptions(new GraphOptions().setGraphName(graph_name)).build
+    else
+      new DseCluster.Builder().addContactPoint(dse_host).build
+
+    dseCluster.connect()
   }
 
 }
