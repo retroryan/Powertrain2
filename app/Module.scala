@@ -27,6 +27,9 @@ class Module(environment: Environment,
     bind(classOf[KafkaConfig]).toProvider(classOf[KafkaProvider])
 
     bind(classOf[Kafka]).to(classOf[KafkaImpl])
+
+    bind(classOf[CassandraConfig]).toProvider(classOf[CassandraProvider])
+
   }
 
 }

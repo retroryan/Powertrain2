@@ -21,14 +21,16 @@ class PowertrainController @Inject()(kafka: Kafka, system: ActorSystem) extends 
   val atomicCounter = new AtomicInteger()
 
   val producerSettings = ProducerSettings(system, new StringSerializer, new StringSerializer)
-    .withBootstrapServers("localhost:9092")
+    .withBootstrapServers("172.31.14.225:9092")
+
+  println(s"NEW producer settings: $producerSettings")
 
   implicit val messageFlowTransformer = MessageFlowTransformer.jsonMessageFlowTransformer[VehicleUpdate, String]
-
 
   def vehicleStream = WebSocket.accept[VehicleUpdate, String] { request =>
     val sink = Flow[VehicleUpdate]
       .map(vehicleUpdate => {
+          println(s"vehicle update: $vehicleUpdate")
           val record: ProducerRecord[String, String] = getProducerRecord(vehicleUpdate)
           ProducerMessage.Message(record, vehicleUpdate)
         }

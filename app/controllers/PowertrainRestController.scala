@@ -14,6 +14,7 @@ import com.google.common.util.concurrent.ListenableFuture
 import play.api._
 import play.api.libs.json._
 import play.api.mvc._
+import services.CassandraConfig
 
 import scala.compat.java8.FutureConverters
 import scala.sys.process._
@@ -21,7 +22,7 @@ import scalaj.http._
 
 case class LeaderboardResults(vehicle_id: String, elapsed_time: String)
 
-class PowertrainRestController @Inject()(configuration: play.api.Configuration, system: ActorSystem) extends Controller {
+class PowertrainRestController @Inject()(configuration: play.api.Configuration, system: ActorSystem, cassandraConfig:CassandraConfig) extends Controller {
 
   def populateGraph(username: String) = Action {
     val pyPath = getClass.getClassLoader.getResource("networkByUser.py").getPath
@@ -72,7 +73,7 @@ class PowertrainRestController @Inject()(configuration: play.api.Configuration, 
 
 
   def global_leaderboard() = Action.async {
-    val session = get_dse_session(configuration.getString("powertrain.dse_graph_host").get, "summitDemo")
+    //val session = get_dse_session(configuration.getString("powertrain.dse_graph_host").get, "summitDemo")
 
     val getGlobalLeaderboard = new SimpleGraphStatement(
       """
@@ -91,13 +92,13 @@ class PowertrainRestController @Inject()(configuration: play.api.Configuration, 
     //Ok(eventualGraphResultSet)
 
     implicit val ec = system.dispatcher
-    val graphCompletionStage: CompletionStage[GraphResultSet] = PowertrainRestController.toCompletionStage(session.executeGraphAsync(getGlobalLeaderboard))
+    val graphCompletionStage: CompletionStage[GraphResultSet] = PowertrainRestController.toCompletionStage(cassandraConfig.session.executeGraphAsync(getGlobalLeaderboard))
     FutureConverters.toScala(graphCompletionStage).map {
       results => Ok(results.all().toString)
     }
   }
   def coding_leaderboard(language: String) = Action.async {
-    val session = get_dse_session(configuration.getString("powertrain.dse_graph_host").get, "summitDemo")
+    //val session = get_dse_session(configuration.getString("powertrain.dse_graph_host").get, "summitDemo")
 
     val getCodingLeaderboard = new SimpleGraphStatement(
       """
@@ -116,14 +117,14 @@ class PowertrainRestController @Inject()(configuration: play.api.Configuration, 
     //Ok(results.toString)
 
     implicit val ec = system.dispatcher
-    val graphCompletionStage: CompletionStage[GraphResultSet] = PowertrainRestController.toCompletionStage(session.executeGraphAsync(getCodingLeaderboard))
+    val graphCompletionStage: CompletionStage[GraphResultSet] = PowertrainRestController.toCompletionStage(cassandraConfig.session.executeGraphAsync(getCodingLeaderboard))
     FutureConverters.toScala(graphCompletionStage).map {
       results => Ok(results.all().toString)
     }
   }
 
   def get_languages() = Action {
-    val session = get_dse_session(configuration.getString("powertrain.dse_graph_host").get, "summitDemo")
+    //val session = get_dse_session(configuration.getString("powertrain.dse_graph_host").get, "summitDemo")
 
     val get_coding_languages = new SimpleGraphStatement(
       """
@@ -132,18 +133,18 @@ class PowertrainRestController @Inject()(configuration: play.api.Configuration, 
           .select('language_name')
           .by('name')
       """)
-    val results = session.executeGraph(get_coding_languages).all()
+    val results = cassandraConfig.session.executeGraph(get_coding_languages).all()
     Ok(results.toString)
   }
 
-  def get_dse_session(dse_host: String, graph_name: String): DseSession = {
+/*  def get_dse_session(dse_host: String, graph_name: String): DseSession = {
     val dseCluster = if (graph_name ne "")
       new DseCluster.Builder().addContactPoint(dse_host).withGraphOptions(new GraphOptions().setGraphName(graph_name)).build
     else
       new DseCluster.Builder().addContactPoint(dse_host).build
 
     dseCluster.connect()
-  }
+  }*/
 
 
 }
