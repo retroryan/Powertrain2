@@ -19,7 +19,9 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-stream-kafka" % "0.11-M3",
   "com.github.jkutner" % "env-keystore" % "0.1.2",
   "org.apache.kafka" %% "kafka" % kafkaVersion,
-  "org.scalaj" %% "scalaj-http" % "2.3.0"
+  "org.scalaj" %% "scalaj-http" % "2.3.0",
+  "com.datastax.cassandra" % "cassandra-driver-core" % "3.0.2",
+  "com.datastax.cassandra" % "dse-driver" % "1.0.0"
 )
 
 resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases"
