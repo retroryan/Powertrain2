@@ -69,10 +69,11 @@ class PowertrainRestController @Inject()(configuration: play.api.Configuration, 
     }
   }
 
-  def global_leaderboard() = Action.async {
-    val session = get_dse_session("54.244.203.71", "summitDemo")
 
-    val getTopTenGlobal = new SimpleGraphStatement(
+  def global_leaderboard() = Action.async {
+    val session = get_dse_session(configuration.getString("powertrain.dse_graph_host").get, "summitDemo")
+
+    val getGlobalLeaderboard = new SimpleGraphStatement(
       """
                   g.V().hasLabel('cassandra_summit')
                     .in('attending').out('has_events')
@@ -82,17 +83,56 @@ class PowertrainRestController @Inject()(configuration: play.api.Configuration, 
                     .by('vehicle_id')
                     .by('elapsed_time')
                     .order().by(select("elapsed_time"), incr)
-                    .limit(10)
+                    .limit(100)
       """)
 
     //val results = session.executeGraph(getTopTenGlobal).all()
     //Ok(eventualGraphResultSet)
 
     implicit val ec = application.actorSystem.dispatcher
-    val graphCompletionStage: CompletionStage[GraphResultSet] = PowertrainRestController.toCompletionStage(session.executeGraphAsync(getTopTenGlobal))
+    val graphCompletionStage: CompletionStage[GraphResultSet] = PowertrainRestController.toCompletionStage(session.executeGraphAsync(getGlobalLeaderboard))
     FutureConverters.toScala(graphCompletionStage).map {
       results => Ok(results.all().toString)
     }
+  }
+  def coding_leaderboard(language: String) = Action.async {
+    val session = get_dse_session(configuration.getString("powertrain.dse_graph_host").get, "summitDemo")
+
+    val getCodingLeaderboard = new SimpleGraphStatement(
+      """
+         g.V().has('coding_language', 'name', name)
+           .inE('develops_in')
+           .outV().dedup()
+           .outE('has_events')
+           .inV().has('event_name', 'lap')
+           .as('vehicle_id', 'elapsed_time')
+           .select('vehicle_id', 'elapsed_time')
+           .by('vehicle_id')
+           .by('elapsed_time')
+           .limit(100)
+      """).set("name", language)
+    //val results = session.executeGraph(getCodingLeaderboard).all()
+    //Ok(results.toString)
+
+    implicit val ec = application.actorSystem.dispatcher
+    val graphCompletionStage: CompletionStage[GraphResultSet] = PowertrainRestController.toCompletionStage(session.executeGraphAsync(getCodingLeaderboard))
+    FutureConverters.toScala(graphCompletionStage).map {
+      results => Ok(results.all().toString)
+    }
+  }
+  
+  def get_languages() = Action {
+    val session = get_dse_session(configuration.getString("powertrain.dse_graph_host").get, "summitDemo")
+
+    val get_coding_languages = new SimpleGraphStatement(
+      """
+         g.V().hasLabel('coding_language')
+          .as('language_name')
+          .select('language_name')
+          .by('name')
+      """)
+    val results = session.executeGraph(get_coding_languages).all()
+    Ok(results.toString)
   }
 
   def get_dse_session(dse_host: String, graph_name: String): DseSession = {

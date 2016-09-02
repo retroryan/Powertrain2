@@ -4,6 +4,9 @@ GET     /vehicleStream              controllers.PowertrainController.vehicleStre
 GET     /populateGraph/:username    controllers.PowertrainRestController.populateGraph(username: String)
 GET     /username/:token            controllers.PowertrainRestController.getUserName(token: String)
 GET     /global_leaderboard            controllers.PowertrainRestController.global_leaderboard()
+GET     /coding_leaderboard/:language            controllers.PowertrainRestController.coding_leaderboard(language)
+GET     /get_languages            controllers.PowertrainRestController.get_languages()
+
 GET     /leaderboard/:username/:filter  controllers.PowertrainRestController.getLeaderboard(username: String, filter: String)
 
 # Map static resources from the /public folder to the /assets URL path
