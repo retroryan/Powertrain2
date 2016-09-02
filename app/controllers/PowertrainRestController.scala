@@ -59,4 +59,9 @@ class PowertrainRestController @Inject() (configuration: play.api.Configuration)
     (response_json \ "login").get.toString.replace("\"","")
   }
 
+  def global_leaderboard(): String ={
+
+    ""
+  }
+
 }

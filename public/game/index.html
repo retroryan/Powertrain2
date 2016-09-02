@@ -354,9 +354,10 @@
                   'url': '/populateGraph/' + data,
                   async: true,
                 })
+                login_successful();
+
               }
             })
-            login_successful();
           }
           $("#alternativeLogin").click(function(){
             $("#loginCard").toggleClass('flipped');
