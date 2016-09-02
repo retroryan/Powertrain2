@@ -7,6 +7,7 @@ package controllers
 import java.util.concurrent.{CompletableFuture, CompletionStage, ForkJoinPool}
 import javax.inject._
 
+import akka.actor.ActorSystem
 import com.datastax.driver.dse.graph.{GraphOptions, GraphResultSet, SimpleGraphStatement}
 import com.datastax.driver.dse.{DseCluster, DseSession}
 import com.google.common.util.concurrent.ListenableFuture
@@ -20,7 +21,7 @@ import scalaj.http._
 
 case class LeaderboardResults(vehicle_id: String, elapsed_time: String)
 
-class PowertrainRestController @Inject()(configuration: play.api.Configuration, application: Application) extends Controller {
+class PowertrainRestController @Inject()(configuration: play.api.Configuration, system: ActorSystem) extends Controller {
 
   def populateGraph(username: String) = Action {
     val pyPath = getClass.getClassLoader.getResource("networkByUser.py").getPath
@@ -89,7 +90,7 @@ class PowertrainRestController @Inject()(configuration: play.api.Configuration, 
     //val results = session.executeGraph(getTopTenGlobal).all()
     //Ok(eventualGraphResultSet)
 
-    implicit val ec = application.actorSystem.dispatcher
+    implicit val ec = system.dispatcher
     val graphCompletionStage: CompletionStage[GraphResultSet] = PowertrainRestController.toCompletionStage(session.executeGraphAsync(getGlobalLeaderboard))
     FutureConverters.toScala(graphCompletionStage).map {
       results => Ok(results.all().toString)
@@ -114,13 +115,13 @@ class PowertrainRestController @Inject()(configuration: play.api.Configuration, 
     //val results = session.executeGraph(getCodingLeaderboard).all()
     //Ok(results.toString)
 
-    implicit val ec = application.actorSystem.dispatcher
+    implicit val ec = system.dispatcher
     val graphCompletionStage: CompletionStage[GraphResultSet] = PowertrainRestController.toCompletionStage(session.executeGraphAsync(getCodingLeaderboard))
     FutureConverters.toScala(graphCompletionStage).map {
       results => Ok(results.all().toString)
     }
   }
-  
+
   def get_languages() = Action {
     val session = get_dse_session(configuration.getString("powertrain.dse_graph_host").get, "summitDemo")
 
