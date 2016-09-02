@@ -291,10 +291,12 @@
                   'url': '/populateGraph/' + data,
                   async: true,
                 })
-                login_successful();
+                //login_successful();
 
               }
             })
+          }else{
+              $('#loginModal').modal('show');
           }
           $("#alternativeLogin").click(function(){
             $("#loginCard").toggleClass('flipped');
@@ -307,13 +309,10 @@
           $("#s-leaderboard").click(function(){
             window.open("leaderboard.html", "_self");
           })
-          $('#start').click(function () {
-            $('#loginModal').modal('show');
-          });
           $("#standard_login").on("click", function(){
             $("#playerName").val($("#username").val());
             $('#loginModal').modal('hide');
-            login_successful();
+            //login_successful();
 //            $('step-2').style.backgroundImage = "url(css/help-" + s[0][3] + ".png)";
 //            $("#step-2").click();
           })
@@ -332,9 +331,9 @@
             bkcore.Audio.volume('wind',.1)
             bkcore.Audio.volume('boost',.1)
           }
-
-
         }
+        });
+
       </script>
 
 

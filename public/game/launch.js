@@ -107,38 +107,23 @@
         }
         return gl != null;
     };
-    window.login_successful = function(){
-        $('step-1').style.display = 'none';
-        $('step-2').style.display = 'block';
-        return $('step-2').style.backgroundImage = "url(css/help-" + s[0][3] + ".png)";
-    }
     if (!hasWebGL()) {
         getWebGL = $('start');
         getWebGL.innerHTML = 'WebGL is not supported!';
         getWebGL.onclick = function() {
             return window.location.href = 'http://get.webgl.org/';
         };
-    } else {
+    }
+    else {
         $('start').onclick = function() {
-
-            // $.ajax({
-            //     'url': '',
-            //     'data': {
-            //         client_id: ""
-            //     }
-            // })
-
-
-
-            // if ( $('playerName').value == "insert name here" || $('playerName').value == "" ){
-            //     alert("Please sign in")
-            // }
-            // else{
-            //     //there's no hash here because we actually overide the $ jquery
-            //     //operator in this file.
-            //     $('g-button').style.display= 'none';
-
-            // }
+            if ( $('playerName').value == "insert name here" || $('playerName').value == "" ){
+                alert("Please sign in")
+            }
+            else{
+               $('step-1').style.display = 'none';
+               $('step-2').style.display = 'block';
+               return $('step-2').style.backgroundImage = "url(css/help-" + s[0][3] + ".png)";
+            }
         };
     }
 
