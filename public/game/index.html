@@ -138,6 +138,10 @@
 
   <script src="https://apis.google.com/js/platform.js?onload=renderButton" async defer></script>
 
+
+
+  </svg>
+
     <div id="step-1">
       <div id="global"></div>
       <div id="title">
@@ -156,7 +160,7 @@
           <div id="s-controlType">Controls: Keyboard</div>
           <div id="s-quality">Quality: High</div>
           <div id="s-hud">HUD: On</div>
-          <div id="s-godmode" style="display: none">Godmode: Off</div>
+          <div id="s-godmode" >Godmode: Off</div>
           <div id="s-credits">Credits</div>
         </div>
       </div>
@@ -169,7 +173,9 @@
       <div id="progressbar"></div>
     </div>
     <div id="step-4" style="display: none">
-      <div id="overlay"></div>
+      <div id="overlay">
+        <img width=80px src="imgs/headphones.svg" style="position:absolute; margin-left:10px; margin-top:10px" onclick="toggleAudio()">
+      </div>
       <div id="main"></div>
     </div>
     <div id="step-5" style="display: none">
@@ -381,6 +387,15 @@
 //            $("#step-2").click();
           })
         });
+        function toggleAudio(){
+          if (bkcore.Audio.sounds.bg.gainNode.gain.value != 0){
+            bkcore.Audio.volume('bg',0)
+          }else {
+            bkcore.Audio.volume('bg',.1)
+          }
+
+
+        }
       </script>
 
 

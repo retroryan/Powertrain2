@@ -68,7 +68,7 @@ bkcore.hexgl.HexGL = function(opts)
 
 	this.gameover = opts.gameover == undefined ? null : opts.gameover;
 
-	this.godmode = opts.godmode == undefined ? false : opts.godmode;
+	this.godmode = opts.godmode == undefined ? true : opts.godmode;
 
 	this.hud = null;
 
@@ -115,9 +115,9 @@ bkcore.hexgl.HexGL.prototype.reset = function()
 	this.manager.get('game').objects.lowFPS = 0;
 	this.gameplay.start();
 
-	bkcore.Audio.stop('bg');
+	bkcore.Audio.stop('bg', .1);
 	bkcore.Audio.stop('wind');
-	bkcore.Audio.volume('wind', 0.35);
+	bkcore.Audio.volume('wind', .2);
 	bkcore.Audio.play('bg');
 	bkcore.Audio.play('wind');
 }
@@ -176,9 +176,9 @@ bkcore.hexgl.HexGL.prototype.initGameplay = function()
 
 	this.gameplay.start();
 
-	bkcore.Audio.play('bg');
+	bkcore.Audio.play('bg', .1);
 	bkcore.Audio.play('wind');
-	bkcore.Audio.volume('wind', 0.35);
+	bkcore.Audio.volume('wind', .2);
 }
 
 bkcore.hexgl.HexGL.prototype.displayScore = function(f, l)
