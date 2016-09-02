@@ -19,7 +19,7 @@ import play.api.libs.ws._
 import sys.process._
 import scalaj.http._
 
-
+case class LeaderboardResults(vehicle_id: String, elapsed_time: String)
 
 class PowertrainRestController @Inject() (configuration: play.api.Configuration) extends Controller {
   def populateGraph(username: String)= Action {
@@ -64,20 +64,22 @@ class PowertrainRestController @Inject() (configuration: play.api.Configuration)
   }
 
   def global_leaderboard() = Action {
-    val session = get_dse_session("127.0.0.1", "summitDemo")
-    ""
+    val session = get_dse_session("54.244.203.71", "summitDemo")
 
     val getTopTenGlobal = new SimpleGraphStatement(
       """
-        g.V().hasLabel('cassandra_summit')
-          .in('attending').out('has_events')
-          .has('powertrain_events','event_name', 'lap')
-          .order().by("elapsed_time", incr)
-          .valueMap('vehicle_id', 'elapsed_time').limit(10)
+                  g.V().hasLabel('cassandra_summit')
+                    .in('attending').out('has_events')
+                    .has('powertrain_events','event_name', 'lap')
+                    .as('vehicle_id', 'elapsed_time')
+                    .select('vehicle_id' ,'elapsed_time')
+                    .by('vehicle_id')
+                    .by('elapsed_time')
+                    .order().by(select("elapsed_time"), incr)
+                    .limit(10)
       """)
     val results = session.executeGraph(getTopTenGlobal).all()
-    println(results);
-    Ok("")
+    Ok(results.toString)
   }
   def get_dse_session(dse_host: String, graph_name: String): DseSession = {
     val dseCluster = if (graph_name ne "")
