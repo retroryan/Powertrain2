@@ -4,7 +4,7 @@ bkcore.hexgl = bkcore.hexgl || {};
 
 bkcore.hexgl.VehicleStream = function()
 {
-    this.ws = new WebSocket("ws://" + window.location.host + "/vehicleStream");
+    this.ws = new WebSocket("ws://172.31.14.225/vehicleStream");
     this.timer = null;
 
     /*this.ws.onopen = function() {
