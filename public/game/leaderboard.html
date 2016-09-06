@@ -144,7 +144,7 @@
                     { data: 'elapsed_time' },
                     { data: 'elapsed_time' }
                 ],
-                "order": [[ 1, "asc" ]],
+                "order": [[ 2, "asc" ]],
                 columnDefs: [
                     {
                         "orderable": false,
@@ -152,13 +152,13 @@
                         "targets": 0
                     },
                     {
+                        "orderable": false,
                         "render": function ( data, type, row, meta ) {
                             return meta.row + 1;
                         },
                         "targets": 1
                     },
                     {
-                        "orderable": false,
                         "render": function ( data, type, row ) {
                             seconds=(data/1000)%60
                             minutes=(data/(1000*60))%60
