@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Leaderboard</title>
 </head>
 <link rel="stylesheet" type="text/css" href="css/datatable.css"/>
 <script type="text/javascript" src="js/datatable.js"></script>
@@ -124,6 +124,7 @@
             'url': '/get_languages',
             'success': function(data){
                 JSON.parse(data).forEach(function(element){
+                    console.log(element)
                     $("#languageDropDown").append('<li class="navbarDropDownItem" style="color:#000000; text-align: center;">' + element + '</li>')
                 })
                 $(".navbarDropDownItem").click(function(){
@@ -160,6 +161,7 @@
                     },
                     {
                         "render": function ( data, type, row ) {
+
                             seconds=(data/1000)%60
                             minutes=(data/(1000*60))%60
                             hours=(data/(1000*60*60))%24

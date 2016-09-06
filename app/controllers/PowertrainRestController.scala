@@ -10,15 +10,19 @@ import javax.inject._
 import akka.actor.ActorSystem
 import com.datastax.driver.dse.graph.{GraphOptions, GraphResultSet, SimpleGraphStatement}
 import com.datastax.driver.dse.{DseCluster, DseSession}
+import com.datastax.driver.core.Row
 import com.google.common.util.concurrent.ListenableFuture
 import play.api._
 import play.api.libs.json._
 import play.api.mvc._
 import services.CassandraConfig
 
+import scala.collection.mutable.ListBuffer
 import scala.compat.java8.FutureConverters
 import scala.sys.process._
 import scalaj.http._
+import scala.collection.JavaConversions._
+
 
 case class LeaderboardResults(vehicle_id: String, elapsed_time: String)
 
@@ -77,15 +81,16 @@ class PowertrainRestController @Inject()(configuration: play.api.Configuration, 
 
     val getGlobalLeaderboard = new SimpleGraphStatement(
       """
-                  g.V().hasLabel('cassandra_summit')
-                    .in('attending').out('has_events')
-                    .has('powertrain_events','event_name', 'lap')
-                    .as('vehicle_id', 'elapsed_time')
-                    .select('vehicle_id' ,'elapsed_time')
-                    .by('vehicle_id')
-                    .by('elapsed_time')
-                    .order().by(select("elapsed_time"), incr)
-                    .limit(100)
+        g.V()
+         .has('powertrain_events','event_name', 'lap')
+          .as('events')
+          .order()
+          .by("elapsed_time", incr)
+          .as('vehicle_id', 'elapsed_time')
+          .select('vehicle_id', 'elapsed_time')
+          .by('vehicle_id')
+          .by('elapsed_time')
+          .limit(100)
       """)
 
     //val results = session.executeGraph(getTopTenGlobal).all()
@@ -124,17 +129,15 @@ class PowertrainRestController @Inject()(configuration: play.api.Configuration, 
   }
 
   def get_languages() = Action {
-    //val session = get_dse_session(configuration.getString("powertrain.dse_graph_host").get, "summitDemo")
-
-    val get_coding_languages = new SimpleGraphStatement(
-      """
-         g.V().hasLabel('coding_language')
-          .as('language_name')
-          .select('language_name')
-          .by('name')
-      """)
-    val results = cassandraConfig.session.executeGraph(get_coding_languages).all()
-    Ok(results.toString)
+    val languages = cassandraConfig.session.execute("select name from cassandra_summit.coding_language_p").all().asInstanceOf[java.util.ArrayList[Row]].toSet
+    val results = ListBuffer[String]()
+    for(language <- languages){
+      if(!language.isNull("name"))
+      {
+        results += language.getString("name")
+      }
+    }
+    Ok(results.toList.toString)
   }
 
 /*  def get_dse_session(dse_host: String, graph_name: String): DseSession = {
