@@ -23,7 +23,6 @@ import scala.sys.process._
 import scalaj.http._
 import scala.collection.JavaConversions._
 
-
 case class LeaderboardResults(vehicle_id: String, elapsed_time: String)
 
 class PowertrainRestController @Inject()(configuration: play.api.Configuration, system: ActorSystem, cassandraConfig:CassandraConfig) extends Controller {
@@ -134,10 +133,12 @@ class PowertrainRestController @Inject()(configuration: play.api.Configuration, 
     for(language <- languages){
       if(!language.isNull("name"))
       {
-        results += language.getString("name")
+        results += "\"" + language.getString("name") + "\""
       }
     }
-    Ok(results.toList.toString)
+    val buffer: java.util.List[String] = results
+
+    Ok(buffer.toString)
   }
 
 /*  def get_dse_session(dse_host: String, graph_name: String): DseSession = {

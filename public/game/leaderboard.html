@@ -143,9 +143,9 @@
                 columns: [
                     { data: 'vehicle_id' },
                     { data: 'elapsed_time' },
-                    { data: 'elapsed_time' }
+                    { data: 'elapsed_time'}
                 ],
-                "order": [[ 2, "asc" ]],
+                "order": [[ 1, "asc" ]],
                 columnDefs: [
                     {
                         "orderable": false,
@@ -165,12 +165,13 @@
                             seconds=(data/1000)%60
                             minutes=(data/(1000*60))%60
                             hours=(data/(1000*60*60))%24
-                            return parseInt(hours) + ":" + parseInt(minutes) + ":" + parseInt(seconds);
+                            return "<td data-sort='" + data +  "'>" + parseInt(hours) + ":" + parseInt(minutes) + ":" + parseInt(seconds) + "</td>";
                         },
                         "targets": 2
                     },
 
-                ]
+                ],
+
 
 
             });
