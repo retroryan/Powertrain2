@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <schema name="autoSolrSchema" version="1.5">
-<types>
-<fieldType class="org.apache.solr.schema.TrieDateField" name="TrieDateField"/>
-<fieldType class="org.apache.solr.schema.TextField" name="TextField">
-<analyzer>
-<tokenizer class="solr.StandardTokenizerFactory"/>
-<filter class="solr.LowerCaseFilterFactory"/>
-</analyzer>
-</fieldType>
-<fieldType class="org.apache.solr.schema.StrField" name="StrField"/>
-</types>
-<fields>
-<field indexed="true" multiValued="false" name="collect_time" stored="true" type="TrieDateField"/>
-<field indexed="true" multiValued="false" name="tile1" stored="true" type="TextField"/>
-<field indexed="true" multiValued="false" name="lat_long" stored="true" type="TextField"/>
-<field indexed="true" multiValued="false" name="tile2" stored="true" type="TextField"/>
-<field indexed="true" multiValued="false" name="vehicle_id" stored="true" type="StrField"/>
-</fields>
-<uniqueKey>vehicle_id</uniqueKey>
+    <types>
+        <fieldType class="org.apache.solr.schema.TrieDateField" name="TrieDateField"/>
+        <fieldType class="org.apache.solr.schema.TextField" name="TextField">
+            <analyzer>
+                <tokenizer class="solr.StandardTokenizerFactory"/>
+                <filter class="solr.LowerCaseFilterFactory"/>
+            </analyzer>
+        </fieldType>
+        <fieldType class="org.apache.solr.schema.StrField" name="StrField"/>
+    </types>
+    <fields>
+        <field indexed="true" multiValued="false" name="collect_time" stored="true" type="TrieDateField"/>
+        <field indexed="true" multiValued="false" name="event_name" stored="true" type="TextField"/>
+        <field indexed="true" multiValued="false" name="event_value" stored="true" type="TextField"/>
+        <field indexed="true" multiValued="false" name="time_period" stored="true" type="TrieDateField"/>
+        <field indexed="true" multiValued="false" name="vehicle_id" stored="true" type="StrField"/>
+    </fields>
+    <uniqueKey>(vehicle_id,time_period,collect_time)</uniqueKey>
+    <defaultSearchField>vehicle_id</defaultSearchField>
 </schema>
-
