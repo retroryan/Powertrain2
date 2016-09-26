@@ -16,12 +16,12 @@ import services.Kafka
 
 
 @Singleton
-class PowertrainController @Inject()(kafka: Kafka, system: ActorSystem) extends Controller {
+class PowertrainController @Inject()(kafka: Kafka, system: ActorSystem, configuration: play.api.Configuration) extends Controller {
 
   val atomicCounter = new AtomicInteger()
 
   val producerSettings = ProducerSettings(system, new StringSerializer, new StringSerializer)
-    .withBootstrapServers("172.31.14.225:9092")
+    .withBootstrapServers(configuration.getString("powertrain.kafkaHost").get)
 
   println(s"NEW producer settings: $producerSettings")
 
